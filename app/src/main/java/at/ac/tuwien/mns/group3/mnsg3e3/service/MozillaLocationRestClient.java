@@ -1,8 +1,11 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.service;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.ScanResult;
+import android.support.v4.util.Consumer;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
+import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -15,27 +18,49 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public class MozillaLocationRestClient {
 
-    public void getLocation(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks) throws JSONException {
+    public void getLocationAsync(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks, final Consumer<Location> callback) {
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
         String url = "https://location.services.mozilla.com/v1/geolocate?key=test";
 
-        JSONObject body = fillBody(cellTowers, wifiNetworks);
+        JSONObject body;
+
+        try {
+            body = fillBody(cellTowers, wifiNetworks);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            callback.accept(null);
+            return;
+        }
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-
+                if (response.has("error")) {
+                    callback.accept(null);
+                    return;
+                }
+                try {
+                    JSONObject jsonLocation = response.getJSONObject("location");
+                    Location location = new Location(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng"), response.getDouble("accuracy"));
+                    callback.accept(location);
+                } catch (JSONException e) {
+                    callback.accept(null);
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                callback.accept(null);
             }
         });
+
 
         queue.add(req);
         queue.start();

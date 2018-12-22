@@ -12,12 +12,17 @@ import android.support.v4.util.Consumer;
 import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
+import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class LocationIntentService extends IntentService {
 
+    final static String MOZILLA_LOCATION_INFO = "mozilla_location_info";
+    final static String LOCATION_INFO = "location_info";
+
+    private MozillaLocationRestClient mozillaLocationRestClient = new MozillaLocationRestClient();
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -28,7 +33,25 @@ public class LocationIntentService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(final Intent intent) {
+        final Context ctx = this;
+        final List<CellTower> cellTowers = getCellTowers(this);
+        final List<ScanResult> wifiNetworks = new LinkedList<>();
+        getWifiNetworks(ctx, new Consumer<List<ScanResult>>() {
+            @Override
+            public void accept(List<ScanResult> scanResults) {
+                wifiNetworks.addAll(scanResults);
+                mozillaLocationRestClient.getLocationAsync(ctx, cellTowers, wifiNetworks, new Consumer<Location>() {
+                    @Override
+                    public void accept(Location location) {
+                        Intent response = new Intent();
+                        response.setAction(MOZILLA_LOCATION_INFO);
+                        response.putExtra(LOCATION_INFO, location);
+                        ctx.sendBroadcast(response);
+                    }
+                });
+            }
+        });
 
     }
 
