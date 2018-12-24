@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.support.v4.util.Consumer;
 import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
@@ -50,16 +51,10 @@ public class LocationIntentService extends IntentService {
         final Context ctx = this;
         // final List<CellTower> cellTowers = getCellTowers(this);
         final List<CellTower> cellTowers = getDebugCellTowers();
-        final List<ScanResult> wifiNetworks = new LinkedList<>();
-        getDebugWifiNetworks(ctx, new Consumer<List<ScanResult>>() {
+        getWifiNetworks(ctx, new Consumer<List<ScanResult>>() {
             @Override
             public void accept(List<ScanResult> scanResults) {
-                wifiNetworks.addAll(scanResults);
-                Location location = mozillaLocationRestClient.getLocation(ctx, cellTowers, wifiNetworks);
-                Intent response = new Intent();
-                response.setAction(MOZILLA_LOCATION_INFO);
-                response.putExtra(LOCATION_INFO, location);
-                ctx.sendBroadcast(response);
+                new BackgroundWorker(ctx, cellTowers, scanResults).execute();
             }
         });
 
@@ -81,8 +76,8 @@ public class LocationIntentService extends IntentService {
 
     private List<CellTower> getDebugCellTowers() {
         List<CellTower> towers = new LinkedList<>();
-        towers.add(new CellTower(9983701, 232, 10, 2520, -60, CellTower.SignalType.UMTS, true));
-        towers.add(new CellTower(2345715, 232, 3, 13000, -90, CellTower.SignalType.UMTS, true));
+        towers.add(new CellTower(9983701, 232, 10, 2520, -60, CellTower.SignalType.WCDMA, true));
+        towers.add(new CellTower(2345715, 232, 3, 13000, -90, CellTower.SignalType.WCDMA, true));
         return towers;
     }
 
@@ -117,5 +112,31 @@ public class LocationIntentService extends IntentService {
     }
 
 
+    private class BackgroundWorker extends AsyncTask<Void, Void, Location> {
+
+        private Context ctx;
+        private List<CellTower> cellTowers;
+        private List<ScanResult> wifiNetworks;
+
+        BackgroundWorker(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks) {
+            this.ctx = ctx;
+            this.cellTowers = cellTowers;
+            this.wifiNetworks = wifiNetworks;
+        }
+
+        @Override
+        protected Location doInBackground(Void... voids) {
+            return mozillaLocationRestClient.getLocation(ctx, cellTowers, wifiNetworks);
+        }
+
+        @Override
+        protected void onPostExecute(Location location) {
+            super.onPostExecute(location);
+            Intent response = new Intent();
+            response.setAction(MOZILLA_LOCATION_INFO);
+            response.putExtra(LOCATION_INFO, location);
+            ctx.sendBroadcast(response);
+        }
+    }
 
 }

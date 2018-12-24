@@ -1,11 +1,9 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.model;
 
-import android.os.Parcel;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
 import android.telephony.CellIdentityWcdma;
 import android.telephony.CellInfo;
-import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
@@ -58,7 +56,7 @@ public class CellTower {
             areaCode = cell_ident.getLac();
             cellId = cell_ident.getCid();
             signalStrength = sig_str.getDbm();
-            type = SignalType.UMTS;
+            type = SignalType.WCDMA;
 
         } else {
             // CDMA is ignored, because there is no coutry code and no area code
@@ -120,7 +118,8 @@ public class CellTower {
     public enum SignalType {
 
         GSM,
-        UMTS,
+        CDMA,
+        WCDMA,
         LTE
     }
 }
