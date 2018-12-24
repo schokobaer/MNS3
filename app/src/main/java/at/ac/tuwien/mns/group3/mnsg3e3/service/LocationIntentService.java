@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager;
 import android.support.v4.util.Consumer;
 import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 
@@ -19,8 +20,8 @@ import java.util.List;
 
 public class LocationIntentService extends IntentService {
 
-    final static String MOZILLA_LOCATION_INFO = "mozilla_location_info";
-    final static String LOCATION_INFO = "location_info";
+    public final static String MOZILLA_LOCATION_INFO = "mozilla_location_info";
+    public final static String LOCATION_INFO = "location_info";
 
     private MozillaLocationRestClient mozillaLocationRestClient = new MozillaLocationRestClient();
 
@@ -33,23 +34,32 @@ public class LocationIntentService extends IntentService {
     }
 
     @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.i(this.getClass().getName(), "Created");
+    }
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        Log.i(this.getClass().getName(), "Started");
+    }
+
+    @Override
     protected void onHandleIntent(final Intent intent) {
         final Context ctx = this;
-        final List<CellTower> cellTowers = getCellTowers(this);
+        // final List<CellTower> cellTowers = getCellTowers(this);
+        final List<CellTower> cellTowers = getDebugCellTowers();
         final List<ScanResult> wifiNetworks = new LinkedList<>();
-        getWifiNetworks(ctx, new Consumer<List<ScanResult>>() {
+        getDebugWifiNetworks(ctx, new Consumer<List<ScanResult>>() {
             @Override
             public void accept(List<ScanResult> scanResults) {
                 wifiNetworks.addAll(scanResults);
-                mozillaLocationRestClient.getLocationAsync(ctx, cellTowers, wifiNetworks, new Consumer<Location>() {
-                    @Override
-                    public void accept(Location location) {
-                        Intent response = new Intent();
-                        response.setAction(MOZILLA_LOCATION_INFO);
-                        response.putExtra(LOCATION_INFO, location);
-                        ctx.sendBroadcast(response);
-                    }
-                });
+                Location location = mozillaLocationRestClient.getLocation(ctx, cellTowers, wifiNetworks);
+                Intent response = new Intent();
+                response.setAction(MOZILLA_LOCATION_INFO);
+                response.putExtra(LOCATION_INFO, location);
+                ctx.sendBroadcast(response);
             }
         });
 
@@ -67,6 +77,17 @@ public class LocationIntentService extends IntentService {
             }
         }
         return cellTowers;
+    }
+
+    private List<CellTower> getDebugCellTowers() {
+        List<CellTower> towers = new LinkedList<>();
+        towers.add(new CellTower(9983701, 232, 10, 2520, -60, CellTower.SignalType.UMTS, true));
+        towers.add(new CellTower(2345715, 232, 3, 13000, -90, CellTower.SignalType.UMTS, true));
+        return towers;
+    }
+
+    private void getDebugWifiNetworks(Context ctx, Consumer<List<ScanResult>> callback) {
+        callback.accept(new LinkedList<ScanResult>());
     }
 
     private void getWifiNetworks(Context ctx, final Consumer<List<ScanResult>> callback) {

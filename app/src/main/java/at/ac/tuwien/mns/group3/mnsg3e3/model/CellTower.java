@@ -66,6 +66,16 @@ public class CellTower {
         }
     }
 
+    public CellTower(int cellId, int countryCode, int netId, int areaCode, int signalStrength, SignalType type, boolean registered) {
+        this.cellId = cellId;
+        this.countryCode = countryCode;
+        this.netId = netId;
+        this.areaCode = areaCode;
+        this.signalStrength = signalStrength;
+        this.type = type;
+        this.registered = registered;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof CellTower)) {

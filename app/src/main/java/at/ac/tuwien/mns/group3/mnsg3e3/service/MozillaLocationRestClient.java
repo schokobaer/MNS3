@@ -12,6 +12,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +25,7 @@ import java.util.concurrent.FutureTask;
 
 public class MozillaLocationRestClient {
 
-    public void getLocationAsync(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks, final Consumer<Location> callback) {
+    public Location getLocation(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks) {
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
         String url = "https://location.services.mozilla.com/v1/geolocate?key=test";
@@ -35,35 +36,26 @@ public class MozillaLocationRestClient {
             body = fillBody(cellTowers, wifiNetworks);
         } catch (JSONException e) {
             e.printStackTrace();
-            callback.accept(null);
-            return;
+            return null;
         }
 
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                if (response.has("error")) {
-                    callback.accept(null);
-                    return;
-                }
-                try {
-                    JSONObject jsonLocation = response.getJSONObject("location");
-                    Location location = new Location(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng"), response.getDouble("accuracy"));
-                    callback.accept(location);
-                } catch (JSONException e) {
-                    callback.accept(null);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                callback.accept(null);
-            }
-        });
-
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, body, future, future);
 
         queue.add(req);
         queue.start();
+
+        try {
+            JSONObject response = future.get();
+            if (response.has("error")) {
+                return null;
+            }
+            JSONObject jsonLocation = response.getJSONObject("location");
+            Location location = new Location(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng"), response.getDouble("accuracy"));
+            return location;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private JSONObject fillBody(List<CellTower> cellTowers, List<ScanResult> wifiNetworks) throws JSONException {
