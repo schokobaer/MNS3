@@ -13,13 +13,17 @@ import android.widget.Button
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
-import com.google.gson.GsonBuilder
 
 class MainActivity : AppCompatActivity() {
 
     private var permissions: Boolean = false
-    private var locationReceiver: LocationReceiver? = null
+    private var locationReportReceiver: LocationReportReceiver? = null
 
+    /**
+     * Asks for permissions if not granted yet.
+     * Registers the receiver.
+     * Init UI.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,6 +35,17 @@ class MainActivity : AppCompatActivity() {
         button.setOnClickListener { test() }
     }
 
+    /**
+     * Unregisteres the locationReportReceiver
+     */
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(locationReportReceiver)
+    }
+
+    /**
+     * Checks if permisions are already granted. if not it returns false and requests the permissions.
+     */
     private fun askPermissions(): Boolean {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -61,6 +76,9 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    /**
+     * Checks the result of the permision request and sets the permissions field if all permissions got granted.
+     */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 3223) {
@@ -69,12 +87,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Register a new receiver for the LocationReportIntentService result.
+     * Needs to be called in the beginning.
+     */
     private fun registerLocationReceiver() {
-        this.locationReceiver = LocationReceiver()
+        this.locationReportReceiver = LocationReportReceiver()
         val intentFilter = IntentFilter()
         intentFilter.addAction(LocationReportIntentService.LOCATIONREPORT_SERVICE)
 
-        registerReceiver(locationReceiver, intentFilter)
+        registerReceiver(locationReportReceiver, intentFilter)
     }
 
     private fun test() {
@@ -85,17 +107,23 @@ class MainActivity : AppCompatActivity() {
         startLocationService()
     }
 
+    /**
+     * This method invokes a new computation of a LocationReport.
+     * It sends a new request to the LocationReportIntentService.
+     */
     private fun startLocationService() {
         val intent = Intent()
         intent.setClass(this, LocationReportIntentService::class.java)
         startService(intent)
     }
 
-    private inner class LocationReceiver : BroadcastReceiver() {
+    /**
+     * The class which represensts the receiver for a computed LocationReport from the
+     * IntentService.
+     */
+    private inner class LocationReportReceiver : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
             var bundle: Bundle = intent.extras
-            //var jsonReport : String = bundle.getString(LocationReportIntentService.LOCATIONREPORT_INFO)
-            //var report : LocationReport = GsonBuilder().create().fromJson(jsonReport, LocationReport::class.java)
             var report : LocationReport = bundle.getSerializable(LocationReportIntentService.LOCATIONREPORT_INFO) as LocationReport
 
             //var report: LocationReport = intent.getSerializableExtra(LocationIntentService.LOCATIONREPORT_INFO) as LocationReport

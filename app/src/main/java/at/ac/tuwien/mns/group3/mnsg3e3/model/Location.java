@@ -33,4 +33,9 @@ public class Location implements Serializable {
     public double getLonRadians() {
         return (lon * Math.PI) / 180;
     }
+
+    @Override
+    public String toString() {
+        return "{ Lat: " + lat + ", Lon: " + lon + ", Acc: " + accurency + " }";
+    }
 }

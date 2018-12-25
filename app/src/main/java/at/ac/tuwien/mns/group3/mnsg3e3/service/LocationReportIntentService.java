@@ -19,7 +19,6 @@ import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport;
-import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -71,8 +70,6 @@ public class LocationReportIntentService extends IntentService {
                 Intent response = new Intent();
                 response.setAction(LOCATIONREPORT_SERVICE);
                 Bundle bundle = new Bundle();
-                String jsonReport = new GsonBuilder().create().toJson(locationReport);
-                //bundle.putString(LocationReportIntentService.LOCATIONREPORT_INFO, jsonReport);
                 bundle.putSerializable(LOCATIONREPORT_INFO, locationReport);
                 response.putExtras(bundle);
                 sendBroadcast(response);
