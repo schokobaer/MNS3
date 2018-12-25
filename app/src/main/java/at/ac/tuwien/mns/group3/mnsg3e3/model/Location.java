@@ -25,4 +25,12 @@ public class Location implements Serializable {
     public double getAccurency() {
         return accurency;
     }
+
+    public double getLatRadians() {
+        return (lat * Math.PI) / 180;
+    }
+
+    public double getLonRadians() {
+        return (lon * Math.PI) / 180;
+    }
 }

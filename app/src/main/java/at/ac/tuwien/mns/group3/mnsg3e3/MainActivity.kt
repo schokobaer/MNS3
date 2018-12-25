@@ -9,9 +9,10 @@ import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
-import android.view.View
 import android.widget.Button
-import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationIntentService
+import android.widget.Toast
+import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
+import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
     private fun registerLocationReceiver() {
         this.locationReceiver = LocationReceiver()
         val intentFilter = IntentFilter()
-        intentFilter.addAction(LocationIntentService.MOZILLA_LOCATION_INFO)
+        intentFilter.addAction(LocationReportIntentService.LOCATIONREPORT_SERVICE)
 
         registerReceiver(locationReceiver, intentFilter)
     }
@@ -85,13 +86,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun startLocationService() {
         val intent = Intent()
-        intent.setClass(this, LocationIntentService::class.java)
+        intent.setClass(this, LocationReportIntentService::class.java)
         startService(intent)
     }
 
     private inner class LocationReceiver : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
-            intent.getStringExtra(LocationIntentService.LOCATION_INFO)
+            var bundle: Bundle = intent.extras
+            var report : LocationReport = bundle.getSerializable(LocationReportIntentService.LOCATIONREPORT_INFO) as LocationReport
+
+            //var report: LocationReport = intent.getSerializableExtra(LocationIntentService.LOCATIONREPORT_INFO) as LocationReport
+            Toast.makeText(ctx, report.difference.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 }
