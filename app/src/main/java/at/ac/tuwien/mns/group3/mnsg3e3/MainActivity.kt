@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
+import com.google.gson.GsonBuilder
 
 class MainActivity : AppCompatActivity() {
 
@@ -93,6 +94,8 @@ class MainActivity : AppCompatActivity() {
     private inner class LocationReceiver : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
             var bundle: Bundle = intent.extras
+            //var jsonReport : String = bundle.getString(LocationReportIntentService.LOCATIONREPORT_INFO)
+            //var report : LocationReport = GsonBuilder().create().fromJson(jsonReport, LocationReport::class.java)
             var report : LocationReport = bundle.getSerializable(LocationReportIntentService.LOCATIONREPORT_INFO) as LocationReport
 
             //var report: LocationReport = intent.getSerializableExtra(LocationIntentService.LOCATIONREPORT_INFO) as LocationReport
