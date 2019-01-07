@@ -8,13 +8,31 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
 import android.widget.Button
 import android.widget.Toast
+import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
+import at.ac.tuwien.mns.group3.mnsg3e3.model.Report
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ICommunication {
+
+    private var reports: MutableList<Report> = mutableListOf<Report>();
+    private var report:Report? = null;
+
+    override fun delete(report: Report?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        reports.remove(report);
+
+    }
+
+    override fun selected(): Report? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return report;
+    }
+
 
     private var permissions: Boolean = false
     private var locationReportReceiver: LocationReportReceiver? = null
@@ -31,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         this.permissions = askPermissions()
         this.registerLocationReceiver()
 
-        val button = findViewById<Button>(R.id.button1)
+        val button = findViewById<FloatingActionButton>(R.id.button1)
         button.setOnClickListener { test() }
     }
 

@@ -2,6 +2,7 @@ package at.ac.tuwien.mns.group3.mnsg3e3.model;
 
 public class Report {
 
+    private int id;
     private String date;
     private String cdn;
     private float precision;
@@ -9,13 +10,18 @@ public class Report {
     private String mls_result;
     private float diff;
 
-    public Report(String date, String cdn, float precision, String mls_param, String mls_result, float diff) {
+    public Report(int id, String date, String cdn, float precision, String mls_param, String mls_result, float diff) {
+        this.id = id;
         this.date = date;
         this.cdn = cdn;
         this.precision = precision;
         this.mls_param = mls_param;
         this.mls_result = mls_result;
         this.diff = diff;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getDate() {
