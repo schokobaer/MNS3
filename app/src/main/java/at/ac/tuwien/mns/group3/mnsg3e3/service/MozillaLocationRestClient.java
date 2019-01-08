@@ -21,10 +21,16 @@ import java.util.List;
 
 public class MozillaLocationRestClient {
 
+    private String apiKey = "test";
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
     public Location getLocation(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks) {
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
-        String url = "https://location.services.mozilla.com/v1/geolocate?key=test";
+        String url = "https://location.services.mozilla.com/v1/geolocate?key=" + this.apiKey;
 
         JSONObject body;
 
@@ -54,46 +60,6 @@ public class MozillaLocationRestClient {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public void getLocationAsync(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks, final Consumer<Location> callback) {
-        RequestQueue queue = Volley.newRequestQueue(ctx);
-        String url = "https://location.services.mozilla.com/v1/geolocate?key=test";
-
-        JSONObject body;
-
-        try {
-            body = fillBody(cellTowers, wifiNetworks);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            callback.accept(null);
-            return;
-        }
-
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                if (response.has("error")) {
-                    callback.accept(null);
-                }
-                try {
-                    JSONObject jsonLocation = response.getJSONObject("location");
-                    Location location = new Location(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng"), response.getDouble("accuracy"));
-                    callback.accept(location);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    callback.accept(null);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                callback.accept(null);
-            }
-        });
-
-        queue.add(req);
-        queue.start();
     }
 
     public JSONObject fillBody(List<CellTower> cellTowers, List<ScanResult> wifiNetworks) throws JSONException {

@@ -65,6 +65,7 @@ public class NetworkScanService {
         try {
             List<ScanResult> results = future.get(15, TimeUnit.SECONDS);
             Log.i(getClass().getName(), "Received results on WifiNetworkScan: " + results.size());
+            ctx.unregisterReceiver(wifiScanReceiver);
             return results;
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             Log.w(getClass().getName(), "Timeout in getWifiNetworks");
