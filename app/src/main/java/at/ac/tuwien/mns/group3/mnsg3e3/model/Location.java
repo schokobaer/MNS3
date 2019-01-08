@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class Location implements Serializable {
 
-    private double lat;
-    private double lon;
-    private double accurency;
+    private double lat; //
+    private double lon; // Longitude
+    private double accurency; // Genauigkeit in Meter
 
     public Location(double lat, double lon, double accurency) {
         this.lat = lat;

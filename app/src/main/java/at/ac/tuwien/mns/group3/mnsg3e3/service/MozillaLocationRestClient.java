@@ -3,6 +3,7 @@ package at.ac.tuwien.mns.group3.mnsg3e3.service;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.support.v4.util.Consumer;
+import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 import com.android.volley.Request;
@@ -43,10 +44,12 @@ public class MozillaLocationRestClient {
         try {
             JSONObject response = future.get();
             if (response.has("error")) {
+                Log.w(getClass().getName(), "Received an error on the REST call");
                 return null;
             }
             JSONObject jsonLocation = response.getJSONObject("location");
             Location location = new Location(jsonLocation.getDouble("lat"), jsonLocation.getDouble("lng"), response.getDouble("accuracy"));
+            Log.i(getClass().getName(), "Received Location from REST call: " + location.toString());
             return location;
         } catch (Exception e) {
             return null;
