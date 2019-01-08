@@ -8,9 +8,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.LinearLayoutManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
+import android.widget.Button
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
@@ -18,6 +21,8 @@ import at.ac.tuwien.mns.group3.mnsg3e3.model.Report
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
+import at.ac.tuwien.mns.group3.mnsg3e3.util.BaseAdapter
+import at.ac.tuwien.mns.group3.mnsg3e3.util.ReportConverter
 
 class MainActivity : AppCompatActivity(), ICommunication {
 
@@ -56,8 +61,6 @@ class MainActivity : AppCompatActivity(), ICommunication {
         val button = findViewById<FloatingActionButton>(R.id.button1)
         button.setOnClickListener { test() }
 
-
-
         this.repo = ReportRepository(application)
 
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
@@ -65,7 +68,6 @@ class MainActivity : AppCompatActivity(), ICommunication {
                 if (reps != null)
                     reports = reps
             }})
-
     }
 
     /**
@@ -138,6 +140,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
             return
         }
         startLocationService()
+        //updateListView()
     }
 
     /**
@@ -148,6 +151,21 @@ class MainActivity : AppCompatActivity(), ICommunication {
         val intent = Intent()
         intent.setClass(this, LocationReportIntentService::class.java)
         startService(intent)
+    }
+
+
+    fun updateListView() {
+        Log.i("mainActivity", "Updating MainActivity data")
+        var recyclerView = findViewById<RecyclerView>(R.id.recyclerview)
+        recyclerView.setHasFixedSize(true)
+        var manager = LinearLayoutManager(this)
+        recyclerView.setLayoutManager(manager)
+        var adapter = BaseAdapter(reports)
+        recyclerView.setAdapter(adapter)
+    }
+
+    fun getTestReports(): Array<Report> {
+        return arrayOf(Report(1, "Heute", "Lat: 0.0, Lon: 0.0", 0.0, "MLS-Params", "Lat: 0.1, Lon: 0.1", 0.1))
     }
 
     /**

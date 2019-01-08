@@ -25,7 +25,7 @@ public class GpsLocationService {
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, listener, ctx.getMainLooper());
 
         try {
-            Location l = future.get(60, TimeUnit.SECONDS);
+            Location l = future.get(5, TimeUnit.SECONDS); // TODO: Change to 60
             //Location l = future.get();
             Log.i(getClass().getName(), "Received a GPS Location: " + l.toString());
             return l;
