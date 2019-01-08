@@ -24,15 +24,13 @@ public class Fragment_Detail extends Fragment {
 
         final Report report = ((ICommunication) getActivity()).selected();
 
-        String id = String.valueOf(report.getId());
         String date = String.format("%-20s: %s", "Date", report.getDate());
         String gps_cdn = String.format("%-20s: %s", "Coordinates", report.getCdn());
         String precision = String.format("%-20s: %s", "Precision", report.getPrecision());
-        String mls_param = String.format("%-20s: %s", "MLS Parameters", report.getMLSParam());
-        String mls_result = String.format("%-20s: %s", "MLS Result", report.getMLSResult());
+        String mls_param = String.format("%-20s: %s", "MLS Parameters", report.getMls_param());
+        String mls_result = String.format("%-20s: %s", "MLS Result", report.getMls_result());
         String difference = String.format("%-20s: %s", "Difference", report.getDiff());
 
-        ((TextView) view.findViewById(R.id.id)).setText(id);
         ((TextView) view.findViewById(R.id.date)).setText(date);
         ((TextView) view.findViewById(R.id.gps_cdn)).setText(gps_cdn);
         ((TextView) view.findViewById(R.id.precision)).setText(precision);

@@ -3,22 +3,24 @@ package at.ac.tuwien.mns.group3.mnsg3e3.model;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Random;
+import java.util.UUID;
 
 @Entity
 public class Report {
 
     @PrimaryKey
-    private int id;
-
+    @NotNull
     private String date;
     private String cdn;
-    private float precision;
+    private double precision;
     private String mls_param;
     private String mls_result;
-    private float diff;
+    private double diff;
 
-    public Report(int id, String date, String cdn, float precision, String mls_param, String mls_result, float diff) {
-        this.id = id;
+    public Report(String date, String cdn, double precision, String mls_param, String mls_result, double diff) {
         this.date = date;
         this.cdn = cdn;
         this.precision = precision;
@@ -27,8 +29,17 @@ public class Report {
         this.diff = diff;
     }
 
-    public int getId() {
-        return id;
+    public Report (LocationReport report) {
+        this.date = report.getTimestamp().toString();
+        this.cdn = report.getGpsLocation().toString();
+        this.precision = report.getGpsLocation().getAccurency();
+        this.mls_param = report.getMozillaInput();
+        if (report.getMozillaLocation() == null) {
+            this.mls_result = "no mozilla location";
+        } else{
+            this.mls_result = report.getMozillaLocation().toString();
+        }
+        this.diff = report.getDifference();
     }
 
     public String getDate() {
@@ -39,19 +50,19 @@ public class Report {
         return cdn;
     }
 
-    public float getPrecision() {
+    public double getPrecision() {
         return precision;
     }
 
-    public String getMLSParam() {
+    public String getMls_param() {
         return mls_param;
     }
 
-    public String getMLSResult() {
+    public String getMls_result() {
         return mls_result;
     }
 
-    public float getDiff() {
+    public double getDiff() {
         return diff;
     }
 }

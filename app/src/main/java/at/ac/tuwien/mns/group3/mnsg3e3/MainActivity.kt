@@ -1,6 +1,7 @@
 package at.ac.tuwien.mns.group3.mnsg3e3
 
 import android.Manifest
+import android.arch.lifecycle.Observer
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,17 +11,20 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
-import android.widget.Button
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 
 class MainActivity : AppCompatActivity(), ICommunication {
 
     private var reports: MutableList<Report> = mutableListOf<Report>();
     private var report:Report? = null;
+    private var repo:ReportRepository? = null
+
 
     override fun delete(report: Report?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -51,6 +55,17 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
         val button = findViewById<FloatingActionButton>(R.id.button1)
         button.setOnClickListener { test() }
+
+
+
+        this.repo = ReportRepository(application)
+
+        repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
+            override fun onChanged(reps: MutableList<Report>?) {
+                if (reps != null)
+                    reports = reps
+            }})
+
     }
 
     /**
@@ -146,6 +161,10 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
             //var report: LocationReport = intent.getSerializableExtra(LocationIntentService.LOCATIONREPORT_INFO) as LocationReport
             Toast.makeText(ctx, report.difference.toString(), Toast.LENGTH_SHORT).show()
+            var rep : Report = Report(report)
+
+            repo?.insert(rep)
+
         }
     }
 }
