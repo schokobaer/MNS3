@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
     private var reports: MutableList<Report> = mutableListOf<Report>();
     private var report:Report? = null;
     private var repo:ReportRepository? = null
+    private var secureModeOn:Boolean = false
 
 
     override fun delete(report: Report?) {
@@ -62,7 +63,19 @@ class MainActivity : AppCompatActivity(), ICommunication {
         val button = findViewById<FloatingActionButton>(R.id.button1)
         button.setOnClickListener { test() }
 
-        this.repo = ReportRepository(application)
+        val btn_sec = findViewById<FloatingActionButton>(R.id.btn_sec)
+        btn_sec.setOnClickListener { changeSecurityMode() }
+
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        secureModeOn = sharedPref.getBoolean("secureModeOn", false)
+
+
+        if (secureModeOn) {
+            //TODO psswd
+        } else {
+            this.repo = ReportRepository(application, null);
+        }
+
 
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
             override fun onChanged(reps: MutableList<Report>?) {
@@ -146,6 +159,16 @@ class MainActivity : AppCompatActivity(), ICommunication {
         }
         startLocationService()
         //updateListView()
+    }
+
+    private fun changeSecurityMode() {
+        if (secureModeOn) {
+            //currently no going back to normal mode
+        } else {
+            val sharedPref = getPreferences(Context.MODE_PRIVATE)
+            sharedPref.edit().putBoolean("secureModeOn", true)
+            //TODO create secure db
+        }
     }
 
     /**
