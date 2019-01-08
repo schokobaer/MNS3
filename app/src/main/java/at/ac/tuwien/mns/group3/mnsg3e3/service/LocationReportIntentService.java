@@ -67,7 +67,8 @@ public class LocationReportIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        newReport(new Consumer<LocationReport>() {
+        // Async
+        /*newReport(new Consumer<LocationReport>() {
             @Override
             public void accept(LocationReport locationReport) {
                 Intent response = new Intent();
@@ -77,7 +78,29 @@ public class LocationReportIntentService extends IntentService {
                 response.putExtras(bundle);
                 sendBroadcast(response);
             }
-        });
+        });*/
+
+
+
+        // Sync
+        List<CellTower> cellTowers = getDebugCellTowers();
+        List<ScanResult> wifiNetworks = getWifiNetworksSync();
+        Location gpsLocation = getGpsLocationSync();
+        Location mozillaLocation = mozillaLocationRestClient.getLocation(this, cellTowers, wifiNetworks);
+        LocationReport report = null;
+        try {
+            JSONObject input = mozillaLocationRestClient.fillBody(cellTowers, wifiNetworks);
+            report = new LocationReport(mozillaLocation, gpsLocation, input);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Intent response = new Intent();
+        response.setAction(LOCATIONREPORT_SERVICE);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(LOCATIONREPORT_INFO, report);
+        response.putExtras(bundle);
+        sendBroadcast(response);
 
     }
 
@@ -173,6 +196,30 @@ public class LocationReportIntentService extends IntentService {
 
     }
 
+    private List<ScanResult> getWifiNetworksSync() {
+        SimpleFuture<List<ScanResult>> future = new SimpleFuture<>();
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        WifiNetworkBroadcastReceiver wifiScanReceiver = new WifiNetworkBroadcastReceiver(future, wifiManager);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+        registerReceiver(wifiScanReceiver, intentFilter);
+
+        boolean success = wifiManager.startScan();
+        if (!success) {
+            // scan failure handling
+            // use old scanns
+            return wifiManager.getScanResults();
+        }
+
+        try {
+            return future.get(15, TimeUnit.SECONDS);
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+            Log.w(getClass().getName(), "Timeout in getWifiNetworks");
+            return new LinkedList<>();
+        }
+    }
+
     @SuppressLint("MissingPermission")
     private void getGpsLocation(Consumer<Location> callback) {
         Handler mHandler = new Handler(getMainLooper());
@@ -192,6 +239,23 @@ public class LocationReportIntentService extends IntentService {
                 }
             }
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    private Location getGpsLocationSync() {
+
+        SimpleFuture<Location> future = new SimpleFuture<>();
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        SimpleLocationListener listener = new SimpleLocationListener(future);
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, listener, null);
+
+        try {
+            return future.get(30, TimeUnit.SECONDS);
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+            Log.w(getClass().getName(), "Timeout in getGpsLocation");
+            Log.i(getClass().getName(), "Using Test GPS Location");
+            return new Location(48.1905858,16.3320705, 0.1d);
+        }
     }
 
     private class BackgroundWorker extends AsyncTask<Void, Void, Location> {
@@ -224,11 +288,17 @@ public class LocationReportIntentService extends IntentService {
     private class WifiNetworkBroadcastReceiver extends BroadcastReceiver {
 
         private Consumer<List<ScanResult>> callback;
+        private SimpleFuture<List<ScanResult>> future;
         private WifiManager wifiManager;
         private boolean complete;
 
         public WifiNetworkBroadcastReceiver(Consumer<List<ScanResult>> callback, WifiManager wifiManager) {
             this.callback = callback;
+            this.wifiManager = wifiManager;
+        }
+
+        public WifiNetworkBroadcastReceiver(SimpleFuture<List<ScanResult>> future, WifiManager wifiManager) {
+            this.future = future;
             this.wifiManager = wifiManager;
         }
 
@@ -239,7 +309,11 @@ public class LocationReportIntentService extends IntentService {
             }
             complete = true;
             List<ScanResult> results = wifiManager.getScanResults();
-            callback.accept(results);
+            if (callback != null) {
+                callback.accept(results);
+            } else if (future != null) {
+                future.put(results);
+            }
         }
 
         public void cancel() {
@@ -255,20 +329,29 @@ public class LocationReportIntentService extends IntentService {
 
         private Consumer<Location> callback;
         private boolean complete;
+        private SimpleFuture<Location> future;
 
         public SimpleLocationListener(Consumer<Location> callback) {
             this.callback = callback;
             complete = false;
         }
 
+        public SimpleLocationListener(SimpleFuture<Location> future) {
+            this.future = future;
+        }
+
         @Override
         public void onLocationChanged(final android.location.Location location) {
-                    if (complete) {
-                        return;
-                    }
-                    Location l = new Location(location.getLatitude(), location.getLongitude(), location.getAccuracy());
-                    complete = true;
+                if (complete) {
+                    return;
+                }
+                Location l = new Location(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+                complete = true;
+                if (callback != null) {
                     callback.accept(l);
+                } else if (future != null) {
+                    future.put(l);
+                }
         }
 
         @Override
@@ -305,7 +388,7 @@ public class LocationReportIntentService extends IntentService {
         }
     }
 
-    private class SimpleFuture<T> implements Future<T> {
+    public class SimpleFuture<T> implements Future<T> {
 
         private final CountDownLatch latch = new CountDownLatch(1);
         private boolean canceled;
@@ -342,6 +425,7 @@ public class LocationReportIntentService extends IntentService {
             if (latch.await(timeout, unit)) {
                 return result;
             } else {
+                this.canceled = true;
                 throw new TimeoutException();
             }
         }
