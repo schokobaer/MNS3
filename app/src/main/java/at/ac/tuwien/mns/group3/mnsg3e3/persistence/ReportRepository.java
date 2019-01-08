@@ -40,4 +40,23 @@ public class ReportRepository {
             return null;
         }
     }
+
+    public void delete (Report report) {
+        new deleteAsyncTask(mReportDao).execute(report);
+    }
+
+    private static class deleteAsyncTask extends AsyncTask<Report, Void, Void> {
+
+        private ReportDao mAsyncTaskDao;
+
+        deleteAsyncTask(ReportDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Report... params) {
+            mAsyncTaskDao.delete(params[0]);
+            return null;
+        }
+    }
 }
