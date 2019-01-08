@@ -25,18 +25,19 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="Date: "
+                        android:textSize="16dp"
+                        android:textStyle="bold"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:minWidth="24dp"
                         android:gravity="right"
                         android:textSize="16dp"
                         android:textStyle="bold"
-                        android:id="@+id/id"
+                        android:id="@+id/detail_date"
                 />
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=". Messung"
-                        android:textSize="16dp"
-                        android:textStyle="bold"/>
+
             </LinearLayout>
             <LinearLayout
                     android:layout_width="match_parent"

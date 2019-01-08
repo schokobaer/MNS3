@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
                 }
             }})
 
-        
+
     }
 
     /**
@@ -178,9 +178,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
             var bundle: Bundle = intent.extras
             var report : LocationReport = bundle.getSerializable(LocationReportIntentService.LOCATIONREPORT_INFO) as LocationReport
 
-            //var report: LocationReport = intent.getSerializableExtra(LocationIntentService.LOCATIONREPORT_INFO) as LocationReport
-            Toast.makeText(ctx, report.difference.toString(), Toast.LENGTH_SHORT).show()
-            var rep : Report = Report(report)
+            var rep : Report = ReportConverter.toModelView(report)
 
             repo?.insert(rep)
 
