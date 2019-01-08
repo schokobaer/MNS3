@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
@@ -65,9 +66,13 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
             override fun onChanged(reps: MutableList<Report>?) {
-                if (reps != null)
+                if (reps != null) {
                     reports = reps
+                    updateListView()
+                }
             }})
+
+        
     }
 
     /**
@@ -162,10 +167,6 @@ class MainActivity : AppCompatActivity(), ICommunication {
         recyclerView.setLayoutManager(manager)
         var adapter = BaseAdapter(reports)
         recyclerView.setAdapter(adapter)
-    }
-
-    fun getTestReports(): Array<Report> {
-        return arrayOf(Report(1, "Heute", "Lat: 0.0, Lon: 0.0", 0.0, "MLS-Params", "Lat: 0.1, Lon: 0.1", 0.1))
     }
 
     /**

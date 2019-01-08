@@ -6,7 +6,7 @@ import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
 
 public class ReportConverter {
 
-    public static Report toModelView(LocationReport lr) {
+    /*public static Report toModelView(LocationReport lr) {
         Report report = new Report(
                 (int) (lr.getTimestamp().getTime() % Integer.MAX_VALUE),
                 lr.getTimestamp().toLocaleString(),
@@ -21,5 +21,5 @@ public class ReportConverter {
 
     public static String toLocationString(Location location) {
         return location.getLat() + ", " + location.getLon();
-    }
+    }*/
 }

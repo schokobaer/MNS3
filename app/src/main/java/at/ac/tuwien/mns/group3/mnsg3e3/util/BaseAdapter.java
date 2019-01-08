@@ -48,7 +48,7 @@ public class BaseAdapter extends RecyclerView.Adapter {
         date = String.format("%-20s: %s", "Timestamp", report.getDate());
 
         ((BasicViewHolder) viewHolder).date.setText(date);
-        ((BasicViewHolder) viewHolder).report.setText("ID: " + report.getId());
+        ((BasicViewHolder) viewHolder).report.setText("ID: " + Math.random());
 
 
         ((BasicViewHolder) viewHolder).card.setOnClickListener(new View.OnClickListener() {
