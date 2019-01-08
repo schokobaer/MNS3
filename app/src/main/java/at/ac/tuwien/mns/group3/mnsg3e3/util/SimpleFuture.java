@@ -1,4 +1,4 @@
-package at.ac.tuwien.mns.group3.mnsg3e3.service;
+package at.ac.tuwien.mns.group3.mnsg3e3.util;
 
 import java.util.concurrent.*;
 
