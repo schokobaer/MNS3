@@ -91,6 +91,7 @@ public class LocationReportIntentService extends IntentService {
         try {
             JSONObject input = mozillaLocationRestClient.fillBody(cellTowers, wifiNetworks);
             report = new LocationReport(mozillaLocation, gpsLocation, input);
+            Log.i(getClass().getName(), "Created Report. Difference is: " + report.getDifference());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -150,6 +151,7 @@ public class LocationReportIntentService extends IntentService {
                 cellTowers.add(ct);
             }
         }
+        Log.i(getClass().getName(), "Received unique Cell Towers on Scan: " + cellTowers.size());
         return cellTowers;
     }
 
@@ -157,6 +159,7 @@ public class LocationReportIntentService extends IntentService {
         List<CellTower> towers = new LinkedList<>();
         towers.add(new CellTower(9983701, 232, 10, 2520, -60, CellTower.SignalType.WCDMA, true));
         towers.add(new CellTower(2345715, 232, 3, 13000, -90, CellTower.SignalType.WCDMA, true));
+        Log.i(getClass().getName(), "Using Test Cell Towers");
         return towers;
     }
 
@@ -208,12 +211,15 @@ public class LocationReportIntentService extends IntentService {
         boolean success = wifiManager.startScan();
         if (!success) {
             // scan failure handling
-            // use old scanns
+            // use old scans
+            Log.i(getClass().getName(), "Using old scan results for wifiNetworkScan");
             return wifiManager.getScanResults();
         }
 
         try {
-            return future.get(15, TimeUnit.SECONDS);
+            List<ScanResult> results = future.get(15, TimeUnit.SECONDS);
+            Log.i(getClass().getName(), "Received results on WifiNetworkScan: " + results.size());
+            return results;
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             Log.w(getClass().getName(), "Timeout in getWifiNetworks");
             return new LinkedList<>();
@@ -247,14 +253,18 @@ public class LocationReportIntentService extends IntentService {
         SimpleFuture<Location> future = new SimpleFuture<>();
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         SimpleLocationListener listener = new SimpleLocationListener(future);
-        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, listener, null);
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, listener, getMainLooper());
 
         try {
-            return future.get(30, TimeUnit.SECONDS);
+            Location l = future.get(60, TimeUnit.SECONDS);
+            //Location l = future.get();
+            Log.i(getClass().getName(), "Received a GPS Location: " + l.toString());
+            return l;
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             Log.w(getClass().getName(), "Timeout in getGpsLocation");
-            Log.i(getClass().getName(), "Using Test GPS Location");
-            return new Location(48.1905858,16.3320705, 0.1d);
+            Location l = new Location(48.1905858,16.3320705, 0.1d);
+            Log.i(getClass().getName(), "Using Test GPS Location: " + l.toString());
+            return l;
         }
     }
 
@@ -342,16 +352,17 @@ public class LocationReportIntentService extends IntentService {
 
         @Override
         public void onLocationChanged(final android.location.Location location) {
-                if (complete) {
-                    return;
-                }
-                Location l = new Location(location.getLatitude(), location.getLongitude(), location.getAccuracy());
-                complete = true;
-                if (callback != null) {
-                    callback.accept(l);
-                } else if (future != null) {
-                    future.put(l);
-                }
+            Log.i(getClass().getName(), "Actually received a location: " + location);
+            if (complete) {
+                return;
+            }
+            Location l = new Location(location.getLatitude(), location.getLongitude(), location.getAccuracy());
+            complete = true;
+            if (callback != null) {
+                callback.accept(l);
+            } else if (future != null) {
+                future.put(l);
+            }
         }
 
         @Override
