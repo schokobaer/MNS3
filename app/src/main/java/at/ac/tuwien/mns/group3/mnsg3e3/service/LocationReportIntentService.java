@@ -173,7 +173,7 @@ public class LocationReportIntentService extends IntentService {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(10 * 1000);
+                    Thread.sleep(600 * 1000);
                     listener.cancle();
                 } catch (InterruptedException e) {
 

@@ -1,8 +1,15 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
+@Entity
 public class Report {
 
+    @PrimaryKey
     private int id;
+
     private String date;
     private String cdn;
     private float precision;
