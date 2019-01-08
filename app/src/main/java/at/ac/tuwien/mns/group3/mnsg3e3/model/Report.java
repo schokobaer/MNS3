@@ -5,12 +5,12 @@ public class Report {
     private int id;
     private String date;
     private String cdn;
-    private float precision;
+    private double precision;
     private String mls_param;
     private String mls_result;
-    private float diff;
+    private double diff;
 
-    public Report(int id, String date, String cdn, float precision, String mls_param, String mls_result, float diff) {
+    public Report(int id, String date, String cdn, double precision, String mls_param, String mls_result, double diff) {
         this.id = id;
         this.date = date;
         this.cdn = cdn;
@@ -32,7 +32,7 @@ public class Report {
         return cdn;
     }
 
-    public float getPrecision() {
+    public double getPrecision() {
         return precision;
     }
 
@@ -44,7 +44,7 @@ public class Report {
         return mls_result;
     }
 
-    public float getDiff() {
+    public double getDiff() {
         return diff;
     }
 }
