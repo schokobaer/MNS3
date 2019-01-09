@@ -60,6 +60,8 @@ dependencies {
     implementation 'com.google.dagger:dagger-android:2.15'
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+
+    // Mockito
     androidTestImplementation 'org.mockito:mockito-android:2.12.0'
 
 
@@ -73,7 +75,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 
     // add this for intent mocking support
-    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    //androidTestImplementation 'com.android.support.test.espresso:espresso-intents:2.2.2'
 
 
     // Barista

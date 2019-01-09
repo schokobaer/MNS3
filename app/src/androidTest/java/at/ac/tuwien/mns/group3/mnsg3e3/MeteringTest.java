@@ -70,9 +70,16 @@ public class MeteringTest {
         List<Report> reports = new LinkedList<>();
         reports.add(new Report("Heute", "ABC", 1, "ASDF", "QWERT", 5));
 
+        // TestModule
+        TestModule testModule = new TestModule();
+        testModule.setGpsLocationService(gpsLocationService);
+        testModule.setMozillaLocationRestClient(mozillaLocationRestClient);
+        testModule.setNetworkScanService(networkScanService);
+        testModule.setInitList(reports);
+
         AppComponent component = DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
-                .serviceModule(new TestModule(gpsLocationService, mozillaLocationRestClient, networkScanService, reports))
+                .serviceModule(testModule)
                 .build();
 
         getApplication().setAppComponent(component);

@@ -19,30 +19,35 @@ public class TestModule extends ServiceModule {
     private NetworkScanService networkScanService;
     private List<Report> initList;
 
-    public TestModule(GpsLocationService gpsLocationService, MozillaLocationRestClient mozillaLocationRestClient, NetworkScanService networkScanService) {
+    public void setGpsLocationService(GpsLocationService gpsLocationService) {
         this.gpsLocationService = gpsLocationService;
+    }
+
+    public void setMozillaLocationRestClient(MozillaLocationRestClient mozillaLocationRestClient) {
         this.mozillaLocationRestClient = mozillaLocationRestClient;
+    }
+
+    public void setNetworkScanService(NetworkScanService networkScanService) {
         this.networkScanService = networkScanService;
     }
 
-    public TestModule(GpsLocationService gpsLocationService, MozillaLocationRestClient mozillaLocationRestClient, NetworkScanService networkScanService, List<Report> initList) {
-        this(gpsLocationService, mozillaLocationRestClient, networkScanService);
+    public void setInitList(List<Report> initList) {
         this.initList = initList;
     }
 
     @Override
     public GpsLocationService provideGpsLocationService() {
-        return gpsLocationService;
+        return gpsLocationService != null ? gpsLocationService : super.provideGpsLocationService();
     }
 
     @Override
     public MozillaLocationRestClient provideMozillaLocationRestClient() {
-        return mozillaLocationRestClient;
+        return mozillaLocationRestClient != null ? mozillaLocationRestClient : super.provideMozillaLocationRestClient();
     }
 
     @Override
     public NetworkScanService provideNetworkScanService() {
-        return networkScanService;
+        return networkScanService != null ? networkScanService : super.provideNetworkScanService();
     }
 
     @Override
