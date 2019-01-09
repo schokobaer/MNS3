@@ -12,6 +12,7 @@ import at.ac.tuwien.mns.group3.mnsg3e3.R;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class BaseAdapter extends RecyclerView.Adapter {
@@ -19,6 +20,8 @@ public class BaseAdapter extends RecyclerView.Adapter {
     List<Report> dataset;
     private int expanded_pos = -1;
     RecyclerView recyclerView;
+
+
 
     public BaseAdapter(List<Report> dataset) {
         this.dataset = dataset;
@@ -42,13 +45,10 @@ public class BaseAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
 
-        String date;
         Report report = dataset.get(i);
 
-        date = String.format("%-20s: %s", "Timestamp", report.getDate());
-
-        ((BasicViewHolder) viewHolder).date.setText(date);
-        ((BasicViewHolder) viewHolder).report.setText("ID: " + Math.random());
+        ((BasicViewHolder) viewHolder).date.setText(report.getDate());
+        ((BasicViewHolder) viewHolder).location.setText("Location: " + report.getCdn());
 
 
         ((BasicViewHolder) viewHolder).card.setOnClickListener(new View.OnClickListener() {
@@ -69,14 +69,14 @@ public class BaseAdapter extends RecyclerView.Adapter {
     public static class BasicViewHolder extends RecyclerView.ViewHolder {
 
         View card;
-        TextView report;
+        TextView location;
         TextView date;
 
         public BasicViewHolder(@NonNull View itemView) {
             super(itemView);
             card = itemView.findViewById(R.id.item);
-            report = itemView.findViewById(R.id.id);
-            date = itemView.findViewById(R.id.date);
+            location = itemView.findViewById(R.id.list_item_location);
+            date = itemView.findViewById(R.id.list_item_date);
         }
     }
 

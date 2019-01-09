@@ -9,12 +9,17 @@ import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 import at.ac.tuwien.mns.group3.mnsg3e3.util.SimpleFuture;
 
+import javax.inject.Inject;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class GpsLocationService {
 
+    /*@Inject
+    public GpsLocationService() {
+
+    }*/
 
     @SuppressLint("MissingPermission")
     public Location getGpsLocationSync(Context ctx) {

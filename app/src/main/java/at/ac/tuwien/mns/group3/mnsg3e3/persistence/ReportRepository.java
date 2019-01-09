@@ -4,16 +4,23 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
+import com.commonsware.cwac.saferoom.SQLCipherUtils;
 import com.commonsware.cwac.saferoom.SafeHelperFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ReportRepository {
 
+    private Application application;
     private ReportDao mReportDao;
     private LiveData<List<Report>> mAllReports;
 
-    public ReportRepository(Application application, SafeHelperFactory factory) {
+    public ReportRepository(Application application) {
+        this.application = application;
+    }
+
+    public void refreshDatabase(SafeHelperFactory factory) {
         AppDatabase db = AppDatabase.getDatabase(application, factory);
         mReportDao = db.reportDao();
         mAllReports = mReportDao.getAll();

@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.SimpleDateFormat;
 import java.util.Random;
 import java.util.UUID;
 
@@ -27,19 +28,6 @@ public class Report {
         this.mls_param = mls_param;
         this.mls_result = mls_result;
         this.diff = diff;
-    }
-
-    public Report (LocationReport report) {
-        this.date = report.getTimestamp().toString();
-        this.cdn = report.getGpsLocation().toString();
-        this.precision = report.getGpsLocation().getAccurency();
-        this.mls_param = report.getMozillaInput();
-        if (report.getMozillaLocation() == null) {
-            this.mls_result = "no mozilla location";
-        } else{
-            this.mls_result = report.getMozillaLocation().toString();
-        }
-        this.diff = report.getDifference();
     }
 
     public String getDate() {

@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.util.Log;
+import at.ac.tuwien.mns.group3.mnsg3e3.GeolocationApplication;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class LocationReportIntentService extends IntentService {
@@ -18,9 +20,9 @@ public class LocationReportIntentService extends IntentService {
     public final static String LOCATIONREPORT_SERVICE = "locationreport_service";
     public final static String LOCATIONREPORT_INFO = "locationreport_info";
 
-    private MozillaLocationRestClient mozillaLocationRestClient = new MozillaLocationRestClient();
-    private NetworkScanService networkScanService = new NetworkScanService();
-    private GpsLocationService gpsLocationService = new GpsLocationService();
+    @Inject MozillaLocationRestClient mozillaLocationRestClient;
+    @Inject NetworkScanService networkScanService;
+    @Inject GpsLocationService gpsLocationService;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -32,6 +34,7 @@ public class LocationReportIntentService extends IntentService {
 
     @Override
     public void onCreate() {
+        ((GeolocationApplication)getApplication()).getAppComponent().inject(this);
         super.onCreate();
         Log.i(this.getClass().getName(), "Created");
     }
