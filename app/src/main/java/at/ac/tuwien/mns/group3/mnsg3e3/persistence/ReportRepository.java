@@ -20,7 +20,7 @@ public class ReportRepository {
         this.application = application;
     }
 
-    public void refreshDatabase(SafeHelperFactory factory) {
+    public void connectDatabase(SafeHelperFactory factory) {
         AppDatabase db = AppDatabase.getDatabase(application, factory);
         mReportDao = db.reportDao();
         mAllReports = mReportDao.getAll();

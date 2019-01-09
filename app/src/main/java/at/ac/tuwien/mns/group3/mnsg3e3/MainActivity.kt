@@ -1,11 +1,9 @@
 package at.ac.tuwien.mns.group3.mnsg3e3
 
 import android.Manifest
+import android.app.AlertDialog
 import android.arch.lifecycle.Observer
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
@@ -13,8 +11,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
+import android.text.Editable
 import android.util.Log
-import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
@@ -24,6 +23,8 @@ import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 import at.ac.tuwien.mns.group3.mnsg3e3.util.BaseAdapter
 import at.ac.tuwien.mns.group3.mnsg3e3.util.ReportConverter
+import com.commonsware.cwac.saferoom.SQLCipherUtils
+import com.commonsware.cwac.saferoom.SafeHelperFactory
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ICommunication {
@@ -76,9 +77,27 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
 
         if (secureModeOn) {
-            //TODO psswd
+            val alert = AlertDialog.Builder(this)
+
+            alert.setTitle("access encrypted database")
+            alert.setMessage("type in the password")
+
+            val input = EditText(this)
+            alert.setView(input)
+
+            alert.setPositiveButton("Ok", DialogInterface.OnClickListener { dialogInterface, i ->
+                login(input.text)
+            })
+
+            alert.setNegativeButton("Unknown", DialogInterface.OnClickListener { dialogInterface, i ->
+                //handle case
+            })
+
+            alert.show()
+            btn_sec.isEnabled = false
+            btn_sec.hide()
         } else {
-            this.repo = ReportRepository(application, null);
+            this.repo.connectDatabase(null)
         }
 
 
@@ -91,6 +110,18 @@ class MainActivity : AppCompatActivity(), ICommunication {
             }})
 
 
+    }
+
+    fun login(editable: Editable) {
+        val factory = SafeHelperFactory.fromUser(editable)
+        this.repo.connectDatabase(factory)
+        repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
+            override fun onChanged(reps: MutableList<Report>?) {
+                if (reps != null) {
+                    reports = reps
+                    updateListView()
+                }
+            }})
     }
 
     /**
@@ -177,8 +208,49 @@ class MainActivity : AppCompatActivity(), ICommunication {
         } else {
             val sharedPref = getPreferences(Context.MODE_PRIVATE)
             sharedPref.edit().putBoolean("secureModeOn", true)
-            //TODO create secure db
+
+            val alert = AlertDialog.Builder(this)
+
+            alert.setTitle("encrypt database")
+            alert.setMessage("type in the password")
+
+            val input = EditText(this)
+            alert.setView(input)
+
+            alert.setPositiveButton("Ok", DialogInterface.OnClickListener { dialogInterface, i ->
+                switchMode(input.text)
+            })
+
+            alert.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
+                //canceled
+            })
+
+            alert.show()
         }
+    }
+
+    private fun switchMode(inputEditable: Editable) {
+
+        val db = AppDatabase.getDatabase(this, null)
+        db.close()
+        SQLCipherUtils.encrypt(applicationContext,"report_database",inputEditable)
+
+        val factory = SafeHelperFactory.fromUser(inputEditable)
+        AppDatabase.refreshInstance()
+        this.repo.connectDatabase(factory)
+        repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
+            override fun onChanged(reps: MutableList<Report>?) {
+                if (reps != null) {
+                    reports = reps
+                    updateListView()
+                }
+            }})
+
+
+        secureModeOn = true
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        sharedPref.edit().putBoolean("secureModeOn", true).commit()
+
     }
 
     /**
@@ -219,4 +291,6 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
         }
     }
+
+
 }
