@@ -1,6 +1,5 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.persistence;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
@@ -12,8 +11,7 @@ public class ReportRepository {
     private ReportDao mReportDao;
     private LiveData<List<Report>> mAllReports;
 
-    public ReportRepository(Application application) {
-        AppDatabase db = AppDatabase.getDatabase(application);
+    public ReportRepository(AppDatabase db) {
         mReportDao = db.reportDao();
         mAllReports = mReportDao.getAll();
     }

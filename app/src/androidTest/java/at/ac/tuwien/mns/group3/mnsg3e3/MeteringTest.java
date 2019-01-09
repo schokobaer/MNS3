@@ -66,24 +66,9 @@ public class MeteringTest {
         when(mozillaLocationRestClient.getLocation(any(Context.class), any(List.class), any(List.class))).thenReturn(new Location(0, 1, 1));
         when(mozillaLocationRestClient.fillBody(any(List.class), any(List.class))).thenReturn(new JSONObject());
 
-        // Repo
-        /*ReportRepository repo = Mockito.mock(ReportRepository.class);
-        final List<Report> reports = new LinkedList<>();
-        final MutableLiveData<List<Report>> repoData = new MutableLiveData<List<Report>>();
-        repoData.postValue(reports);
-        when(repo.getAllReports()).thenReturn(repoData);
-        Mockito.doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                reports.add(new Report("", "", 0, "", "", 0));
-                return null;
-            }
-        }).when(repo).insert(any(Report.class));*/
-
-
         AppComponent component = DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
-                .serviceModule(new TestModule(gpsLocationService, mozillaLocationRestClient, networkScanService, null))
+                .serviceModule(new TestModule(gpsLocationService, mozillaLocationRestClient, networkScanService))
                 .build();
 
         getApplication().setAppComponent(component);

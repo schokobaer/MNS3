@@ -1,6 +1,9 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.di;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
+import android.support.test.InstrumentationRegistry;
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.GpsLocationService;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.MozillaLocationRestClient;
@@ -11,13 +14,11 @@ public class TestModule extends ServiceModule {
     private GpsLocationService gpsLocationService;
     private MozillaLocationRestClient mozillaLocationRestClient;
     private NetworkScanService networkScanService;
-    private ReportRepository repo;
 
-    public TestModule(GpsLocationService gpsLocationService, MozillaLocationRestClient mozillaLocationRestClient, NetworkScanService networkScanService, ReportRepository repo) {
+    public TestModule(GpsLocationService gpsLocationService, MozillaLocationRestClient mozillaLocationRestClient, NetworkScanService networkScanService) {
         this.gpsLocationService = gpsLocationService;
         this.mozillaLocationRestClient = mozillaLocationRestClient;
         this.networkScanService = networkScanService;
-        this.repo = repo;
     }
 
     @Override
@@ -36,10 +37,7 @@ public class TestModule extends ServiceModule {
     }
 
     @Override
-    public ReportRepository provideReportRepository(Application application) {
-        if (repo != null) {
-            return repo;
-        }
-        return super.provideReportRepository(application);
+    public AppDatabase provideAppDatabase(Application application) {
+        return Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), AppDatabase.class).build();
     }
 }

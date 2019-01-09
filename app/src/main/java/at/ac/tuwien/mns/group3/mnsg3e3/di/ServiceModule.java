@@ -37,8 +37,8 @@ public class ServiceModule {
 
     @Singleton
     @Provides
-    public ReportRepository provideReportRepository(Application application) {
-        return new ReportRepository(application);
+    public ReportRepository provideReportRepository(AppDatabase db) {
+        return new ReportRepository(db);
     }
 
     @Singleton
