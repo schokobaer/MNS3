@@ -66,9 +66,13 @@ public class MeteringTest {
         when(mozillaLocationRestClient.getLocation(any(Context.class), any(List.class), any(List.class))).thenReturn(new Location(0, 1, 1));
         when(mozillaLocationRestClient.fillBody(any(List.class), any(List.class))).thenReturn(new JSONObject());
 
+        // Repo
+        List<Report> reports = new LinkedList<>();
+        reports.add(new Report("Heute", "ABC", 1, "ASDF", "QWERT", 5));
+
         AppComponent component = DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
-                .serviceModule(new TestModule(gpsLocationService, mozillaLocationRestClient, networkScanService))
+                .serviceModule(new TestModule(gpsLocationService, mozillaLocationRestClient, networkScanService, reports))
                 .build();
 
         getApplication().setAppComponent(component);
@@ -83,7 +87,7 @@ public class MeteringTest {
         activityRule.launchActivity(new Intent());
         clickOn(R.id.button1);
         try {
-            Thread.sleep(60 * 1000);
+            Thread.sleep(3 * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
