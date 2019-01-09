@@ -24,12 +24,14 @@ import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 import at.ac.tuwien.mns.group3.mnsg3e3.util.BaseAdapter
 import at.ac.tuwien.mns.group3.mnsg3e3.util.ReportConverter
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ICommunication {
 
     private var reports: MutableList<Report> = mutableListOf<Report>();
     private var report:Report? = null;
-    private var repo:ReportRepository? = null
+    @Inject lateinit var repo:ReportRepository
+    private var locationServiceInAction = false
 
 
     override fun delete(report: Report?) {
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
      * Init UI.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
+        (application as GeolocationApplication).appComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -62,7 +65,8 @@ class MainActivity : AppCompatActivity(), ICommunication {
         val button = findViewById<FloatingActionButton>(R.id.button1)
         button.setOnClickListener { test() }
 
-        this.repo = ReportRepository(application)
+        // Old
+        //this.repo = ReportRepository(application)
 
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
             override fun onChanged(reps: MutableList<Report>?) {
@@ -144,7 +148,12 @@ class MainActivity : AppCompatActivity(), ICommunication {
             this.askPermissions()
             return
         }
+        if (locationServiceInAction) {
+            Toast.makeText(this, "Wait for the result before starting a new Request", Toast.LENGTH_SHORT).show()
+            return
+        }
         startLocationService()
+        Toast.makeText(this, "Sending a new Location Service Call. This could take a while ...", Toast.LENGTH_LONG).show()
         //updateListView()
     }
 
@@ -156,6 +165,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
         val intent = Intent()
         intent.setClass(this, LocationReportIntentService::class.java)
         startService(intent)
+        locationServiceInAction = true
     }
 
 
@@ -181,6 +191,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
             var rep : Report = ReportConverter.toModelView(report)
 
             repo?.insert(rep)
+            locationServiceInAction = false
 
         }
     }
