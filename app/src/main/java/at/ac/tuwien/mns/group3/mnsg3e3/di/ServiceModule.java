@@ -1,6 +1,8 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.di;
 
 import android.app.Application;
+import android.arch.persistence.room.Room;
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.GpsLocationService;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.MozillaLocationRestClient;
@@ -37,5 +39,11 @@ public class ServiceModule {
     @Provides
     public ReportRepository provideReportRepository(Application application) {
         return new ReportRepository(application);
+    }
+
+    @Singleton
+    @Provides
+    public AppDatabase provideAppDatabase(Application application) {
+        return Room.databaseBuilder(application.getApplicationContext(), AppDatabase.class, "report_database").build();
     }
 }
