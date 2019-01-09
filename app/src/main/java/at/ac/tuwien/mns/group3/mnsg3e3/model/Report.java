@@ -5,12 +5,13 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Random;
 import java.util.UUID;
 
 @Entity
-public class Report {
+public class Report implements Serializable {
 
     @PrimaryKey
     @NotNull

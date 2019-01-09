@@ -14,6 +14,16 @@ import org.w3c.dom.Text;
 
 public class Fragment_Detail extends Fragment {
 
+
+    public static Fragment newInstance(Report report){
+        Fragment fragment = new Fragment_Detail();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("report", report);
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         return inflater.inflate(R.layout.fragment_detail, container, false);
@@ -22,7 +32,7 @@ public class Fragment_Detail extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle bundle) {
 
-        final Report report = ((ICommunication) getActivity()).selected();
+        final Report report = (Report) getArguments().getSerializable("report");
 
         String date = String.format("%-20s: %s", "Date", report.getDate());
         String gps_cdn = String.format("%-20s: %s", "Coordinates", report.getCdn());

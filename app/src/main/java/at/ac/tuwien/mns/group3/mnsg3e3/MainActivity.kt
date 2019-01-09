@@ -68,6 +68,8 @@ class MainActivity : AppCompatActivity(), ICommunication {
         // Old
         //this.repo = ReportRepository(application)
 
+        updateListView()
+
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
             override fun onChanged(reps: MutableList<Report>?) {
                 if (reps != null) {
