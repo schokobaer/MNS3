@@ -1,56 +1,35 @@
 package at.ac.tuwien.mns.group3.mnsg3e3;
 
-import android.app.Application;
-import android.app.Instrumentation;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
+import android.support.test.espresso.Espresso;
+import android.support.test.espresso.action.ViewActions;
+import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.v7.widget.RecyclerView;
 import at.ac.tuwien.mns.group3.mnsg3e3.di.*;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
-import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
-import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.GpsLocationService;
-import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.MozillaLocationRestClient;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.NetworkScanService;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import javax.inject.Inject;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn;
+
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 
-@RunWith(AndroidJUnit4.class)
-public class MeteringTest {
+public class MeteringTest extends BaseUiTest {
 
-    @Rule
-    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
-
-    @Before
+    @Override
     public void setup() throws JSONException {
         // Gps
         GpsLocationService gpsLocationService = Mockito.mock(GpsLocationService.class);
@@ -83,21 +62,19 @@ public class MeteringTest {
                 .build();
 
         getApplication().setAppComponent(component);
-    }
 
-    GeolocationApplication getApplication() {
-        return (GeolocationApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        activityRule.launchActivity(new Intent(getApplication().getApplicationContext(), MainActivity.class));
     }
 
     @Test
-    public void clickOnNewMetering() {
-        activityRule.launchActivity(new Intent());
-        clickOn(R.id.button1);
-        try {
-            Thread.sleep(3 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void clickOnNewMetering() throws InterruptedException {
+
+        Thread.sleep(3 * 1000);
+        RecyclerView rv = activityRule.getActivity().findViewById(R.id.recyclerview);
+        Assert.assertEquals(1, rv.getAdapter().getItemCount());
+        Espresso.onView(ViewMatchers.withId(R.id.button1)).perform(ViewActions.click());
+        Thread.sleep(5 * 1000);
+        Assert.assertEquals(2, rv.getAdapter().getItemCount());
     }
 
 
