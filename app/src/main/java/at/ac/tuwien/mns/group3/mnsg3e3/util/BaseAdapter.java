@@ -1,13 +1,21 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.util;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionManager;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import at.ac.tuwien.mns.group3.mnsg3e3.Fragment_Detail;
 import at.ac.tuwien.mns.group3.mnsg3e3.R;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
 import org.w3c.dom.Text;
@@ -18,7 +26,6 @@ import java.util.List;
 public class BaseAdapter extends RecyclerView.Adapter {
 
     List<Report> dataset;
-    private int expanded_pos = -1;
     RecyclerView recyclerView;
 
 
@@ -45,7 +52,7 @@ public class BaseAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
 
-        Report report = dataset.get(i);
+        final Report report = dataset.get(i);
 
         ((BasicViewHolder) viewHolder).date.setText(report.getDate());
         ((BasicViewHolder) viewHolder).location.setText("Location: " + report.getCdn());
@@ -54,7 +61,12 @@ public class BaseAdapter extends RecyclerView.Adapter {
         ((BasicViewHolder) viewHolder).card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Open fragment
+
+                Context context = recyclerView.getContext();
+                FrameLayout layout = (FrameLayout) recyclerView.getParent();
+                //layout.removeAllViews();
+                Fragment detail = Fragment_Detail.newInstance(dataset.get(i));
+                ((FragmentActivity) context).getSupportFragmentManager().beginTransaction().replace(R.id.main, detail).addToBackStack(null).commit();
             }
         });
 
