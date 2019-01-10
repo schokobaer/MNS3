@@ -26,6 +26,6 @@ public class ReportConverter {
         if (location == null) {
             return "N/A";
         }
-        return location.getLat() + ", " + location.getLon();
+        return location.getLat() + ", " + location.getLon() + " (Precision: " + location.getAccurency() + ")";
     }
 }

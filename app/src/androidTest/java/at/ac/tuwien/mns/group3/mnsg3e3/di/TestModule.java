@@ -17,7 +17,8 @@ public class TestModule extends ServiceModule {
     private GpsLocationService gpsLocationService;
     private MozillaLocationRestClient mozillaLocationRestClient;
     private NetworkScanService networkScanService;
-    private List<Report> initList;
+    private ReportRepository reportRepository;
+    private List<Report> reports;
 
     public void setGpsLocationService(GpsLocationService gpsLocationService) {
         this.gpsLocationService = gpsLocationService;
@@ -31,8 +32,8 @@ public class TestModule extends ServiceModule {
         this.networkScanService = networkScanService;
     }
 
-    public void setInitList(List<Report> initList) {
-        this.initList = initList;
+    public void setInitList(List<Report> reports) {
+        this.reports = reports;
     }
 
     @Override
@@ -52,14 +53,15 @@ public class TestModule extends ServiceModule {
 
     @Override
     public ReportRepository provideReportRepository(AppDatabase db) {
-        ReportRepository repo = super.provideReportRepository(db);
-        if (this.initList != null) {
-            for (Report r: initList) {
-                repo.insert(r);
+        if (reportRepository == null) {
+            reportRepository = super.provideReportRepository(db);
+            if (this.reports != null) {
+                for (Report r: reports) {
+                    reportRepository.insert(r);
+                }
             }
         }
-
-        return repo;
+        return reportRepository;
     }
 
     @Override

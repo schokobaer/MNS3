@@ -9,6 +9,8 @@ import at.ac.tuwien.mns.group3.mnsg3e3.di.AppModule;
 import at.ac.tuwien.mns.group3.mnsg3e3.di.DaggerAppComponent;
 import at.ac.tuwien.mns.group3.mnsg3e3.di.TestModule;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -22,10 +24,12 @@ public abstract class BaseUiTest {
     @Rule
     public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
 
+    protected List<Report> reports = new LinkedList<>();
+    private TestModule testModule = new TestModule();;
+
     @Before
     public void setup() throws Exception {
         // Repo
-        List<Report> reports = new LinkedList<>();
         reports.add(new Report("Heute", "ABC", 1, "ASDF", "QWERT", 5));
         reports.add(new Report("Morgen", "LALI", 99, "ASDF", "QWERT", 5));
         reports.add(new Report("Gestern", "Testloc", 1, "ASDF", "QWERT", 5));
@@ -44,7 +48,6 @@ public abstract class BaseUiTest {
         reports.add(new Report("Wasserzeit2", "WUEUW2", 1, "ASDF", "QWERT", 5));
 
         // TestModule
-        TestModule testModule = new TestModule();
         testModule.setInitList(reports);
 
         AppComponent component = DaggerAppComponent.builder()
@@ -60,5 +63,15 @@ public abstract class BaseUiTest {
 
     GeolocationApplication getApplication() {
         return (GeolocationApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+    }
+
+    @After
+    public void cleanup() {
+        ReportRepository repo = testModule.provideReportRepository(testModule.provideAppDatabase(getApplication()));
+
+        for (Report r: reports) {
+            repo.delete(r);
+        }
+
     }
 }
