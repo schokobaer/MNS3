@@ -22,6 +22,7 @@ import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 import at.ac.tuwien.mns.group3.mnsg3e3.util.BaseAdapter
+import at.ac.tuwien.mns.group3.mnsg3e3.util.ExceptionHandler
 import at.ac.tuwien.mns.group3.mnsg3e3.util.ReportConverter
 import com.commonsware.cwac.saferoom.SQLCipherUtils
 import com.commonsware.cwac.saferoom.SafeHelperFactory
@@ -79,6 +80,9 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
         val sharedPref = getPreferences(Context.MODE_PRIVATE)
         secureModeOn = sharedPref.getBoolean("secureModeOn", false)
+
+
+        Thread.setDefaultUncaughtExceptionHandler(ExceptionHandler(this))
 
 
         if (secureModeOn) {
