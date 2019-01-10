@@ -7,19 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.LinearLayoutManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.widget.Button
 import android.widget.Toast
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report
-import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 import at.ac.tuwien.mns.group3.mnsg3e3.util.BaseAdapter
@@ -195,6 +193,17 @@ class MainActivity : AppCompatActivity(), ICommunication {
             repo?.insert(rep)
             locationServiceInAction = false
 
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            findViewById<FloatingActionButton>(R.id.button1).show()
+            supportFragmentManager.popBackStack()
+
+        } else {
+            Toast.makeText(this, "Closing the app.", Toast.LENGTH_LONG).show()
+            finish()
         }
     }
 }

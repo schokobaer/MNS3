@@ -26,5 +26,4 @@
                 android:id="@+id/button1"/>
     </FrameLayout>
 
-
 </LinearLayout>

@@ -6,14 +6,12 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
-import org.w3c.dom.Text;
 
 public class Fragment_Detail extends Fragment {
 
@@ -75,6 +73,7 @@ public class Fragment_Detail extends Fragment {
             public void onClick(View v) {
                 //TODO implement delete and returning to activity
                 ((ICommunication) getActivity()).delete(report);
+                getActivity().findViewById(R.id.button1).setVisibility(View.VISIBLE);
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         });
