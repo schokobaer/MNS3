@@ -25,6 +25,8 @@ import at.ac.tuwien.mns.group3.mnsg3e3.util.BaseAdapter
 import at.ac.tuwien.mns.group3.mnsg3e3.util.ReportConverter
 import com.commonsware.cwac.saferoom.SQLCipherUtils
 import com.commonsware.cwac.saferoom.SafeHelperFactory
+import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.Exception
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ICommunication {
@@ -45,6 +47,10 @@ class MainActivity : AppCompatActivity(), ICommunication {
     override fun selected(): Report? {
         //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         return report
+    }
+
+    public fun isSecureModeOn(): Boolean {
+        return secureModeOn
     }
 
 
@@ -252,6 +258,8 @@ class MainActivity : AppCompatActivity(), ICommunication {
         secureModeOn = true
         val sharedPref = getPreferences(Context.MODE_PRIVATE)
         sharedPref.edit().putBoolean("secureModeOn", true).commit()
+        btn_sec.hide()
+        btn_sec.isEnabled = false
 
     }
 
@@ -297,6 +305,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             findViewById<FloatingActionButton>(R.id.button1).show()
+            if (!secureModeOn) findViewById<FloatingActionButton>(R.id.btn_sec).show()
             supportFragmentManager.popBackStack()
 
         } else {

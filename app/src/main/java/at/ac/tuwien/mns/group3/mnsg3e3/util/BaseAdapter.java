@@ -61,6 +61,7 @@ public class BaseAdapter extends RecyclerView.Adapter {
                 Fragment detail = Fragment_Detail.newInstance(dataset.get(i));
                 ((FragmentActivity) context).getSupportFragmentManager().beginTransaction().add(R.id.main, detail).addToBackStack(null).commit();
                 ((FragmentActivity) context).findViewById(R.id.button1).setVisibility(View.GONE);
+                ((FragmentActivity) context).findViewById(R.id.btn_sec).setVisibility(View.GONE);
             }
         });
 

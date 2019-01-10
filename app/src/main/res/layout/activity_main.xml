@@ -25,12 +25,11 @@
         >
 
 
-        <android.support.design.widget.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clickable="true" app:srcCompat="@android:drawable/ic_lock_idle_lock"
-                android:id="@+id/btn_sec"/>
+            <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:id="@+id/btn_sec" android:src="@android:drawable/ic_lock_idle_lock"/>
         <android.support.design.widget.FloatingActionButton
                 android:text="Button"
                 android:layout_width="wrap_content"

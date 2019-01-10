@@ -74,6 +74,7 @@ public class Fragment_Detail extends Fragment {
                 //TODO implement delete and returning to activity
                 ((ICommunication) getActivity()).delete(report);
                 getActivity().findViewById(R.id.button1).setVisibility(View.VISIBLE);
+                if (!((MainActivity) getActivity()).isSecureModeOn()) getActivity().findViewById(R.id.btn_sec).setVisibility(View.VISIBLE);
                 getActivity().getSupportFragmentManager().popBackStack();
             }
         });
