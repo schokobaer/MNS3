@@ -26,6 +26,11 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
+        }
+    }
 }
 
 dependencies {
