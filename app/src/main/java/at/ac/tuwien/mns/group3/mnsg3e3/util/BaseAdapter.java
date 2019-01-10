@@ -1,26 +1,19 @@
 package at.ac.tuwien.mns.group3.mnsg3e3.util;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionManager;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import at.ac.tuwien.mns.group3.mnsg3e3.Fragment_Detail;
 import at.ac.tuwien.mns.group3.mnsg3e3.R;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
-import org.w3c.dom.Text;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class BaseAdapter extends RecyclerView.Adapter {
@@ -66,7 +59,8 @@ public class BaseAdapter extends RecyclerView.Adapter {
                 FrameLayout layout = (FrameLayout) recyclerView.getParent();
                 //layout.removeAllViews();
                 Fragment detail = Fragment_Detail.newInstance(dataset.get(i));
-                ((FragmentActivity) context).getSupportFragmentManager().beginTransaction().replace(R.id.main, detail).addToBackStack(null).commit();
+                ((FragmentActivity) context).getSupportFragmentManager().beginTransaction().add(R.id.main, detail).addToBackStack(null).commit();
+                ((FragmentActivity) context).findViewById(R.id.button1).setVisibility(View.GONE);
             }
         });
 

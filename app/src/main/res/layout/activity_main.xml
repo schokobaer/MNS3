@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+
+<LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/main"
->
-
-    <android.support.v7.widget.RecyclerView
+        android:layout_height="match_parent">
+    <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/recyclerview"
-    />
+            android:id="@+id/main"
+    >
 
-    <android.support.design.widget.FloatingActionButton
-            android:text="Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_input_add"
-            android:id="@+id/button1"/>
-</FrameLayout>
+        <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recyclerview"
+        />
+
+        <android.support.design.widget.FloatingActionButton
+                android:text="Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="16dp"
+                android:src="@drawable/baseline_add_white_24"
+                android:id="@+id/button1"/>
+    </FrameLayout>
+
+</LinearLayout>

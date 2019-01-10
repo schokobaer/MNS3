@@ -12,12 +12,10 @@ import static com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.
 public class OpenReportTest extends BaseUiTest {
 
     @Test
-    public void openReportTest() throws InterruptedException {
+    public void openReportTest() {
         String precision = String.format("%-20s: %s", "Precision", 99.0d);
-        Thread.sleep(3 * 1000);
         assertNotExist(precision);
         Espresso.onView(ViewMatchers.withId(R.id.recyclerview)).perform(RecyclerViewActions.actionOnItemAtPosition(1, ViewActions.click()));
-        Thread.sleep(5 * 1000);
 
         assertDisplayed(precision);
 

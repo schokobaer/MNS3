@@ -37,7 +37,7 @@ public class MeteringTest extends BaseUiTest {
 
         // NetworkScan
         NetworkScanService networkScanService = Mockito.mock(NetworkScanService.class);
-        when(networkScanService.getDebugCellTowers()).thenReturn(new LinkedList<CellTower>());
+        when(networkScanService.getCellTowers(any(Context.class))).thenReturn(new LinkedList<CellTower>());
         when(networkScanService.getWifiNetworksSync(any(Context.class))).thenReturn(new LinkedList<ScanResult>());
 
         // MozillaLocationService
@@ -67,13 +67,10 @@ public class MeteringTest extends BaseUiTest {
     }
 
     @Test
-    public void clickOnNewMetering() throws InterruptedException {
-
-        Thread.sleep(3 * 1000);
+    public void clickOnNewMetering() {
         RecyclerView rv = activityRule.getActivity().findViewById(R.id.recyclerview);
         Assert.assertEquals(1, rv.getAdapter().getItemCount());
         Espresso.onView(ViewMatchers.withId(R.id.button1)).perform(ViewActions.click());
-        Thread.sleep(5 * 1000);
         Assert.assertEquals(2, rv.getAdapter().getItemCount());
     }
 
