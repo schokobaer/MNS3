@@ -45,12 +45,10 @@ public class MeteringTest extends BaseUiTest {
         when(mozillaLocationRestClient.getLocation(any(Context.class), any(List.class), any(List.class))).thenReturn(new Location(0, 1, 1));
         when(mozillaLocationRestClient.fillBody(any(List.class), any(List.class))).thenReturn(new JSONObject());
 
-        // Repo
-        List<Report> reports = new LinkedList<>();
-        reports.add(new Report("Heute", "ABC", 1, "ASDF", "QWERT", 5));
+        super.setTestDB();
+        super.setTestPrefService();
 
         // TestModule
-        TestModule testModule = new TestModule();
         testModule.setGpsLocationService(gpsLocationService);
         testModule.setMozillaLocationRestClient(mozillaLocationRestClient);
         testModule.setNetworkScanService(networkScanService);
@@ -69,9 +67,9 @@ public class MeteringTest extends BaseUiTest {
     @Test
     public void clickOnNewMetering() {
         RecyclerView rv = activityRule.getActivity().findViewById(R.id.recyclerview);
-        Assert.assertEquals(1, rv.getAdapter().getItemCount());
+        Assert.assertEquals(0, rv.getAdapter().getItemCount());
         Espresso.onView(ViewMatchers.withId(R.id.button1)).perform(ViewActions.click());
-        Assert.assertEquals(2, rv.getAdapter().getItemCount());
+        Assert.assertEquals(1, rv.getAdapter().getItemCount());
     }
 
 

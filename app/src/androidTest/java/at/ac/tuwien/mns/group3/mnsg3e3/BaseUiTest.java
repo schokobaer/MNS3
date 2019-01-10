@@ -1,5 +1,8 @@
 package at.ac.tuwien.mns.group3.mnsg3e3;
 
+import android.app.Activity;
+import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
@@ -9,14 +12,22 @@ import at.ac.tuwien.mns.group3.mnsg3e3.di.AppModule;
 import at.ac.tuwien.mns.group3.mnsg3e3.di.DaggerAppComponent;
 import at.ac.tuwien.mns.group3.mnsg3e3.di.TestModule;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase;
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabaseFactory;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
+import at.ac.tuwien.mns.group3.mnsg3e3.service.PreferencesService;
+import com.commonsware.cwac.saferoom.SafeHelperFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 @RunWith(AndroidJUnit4.class)
 public abstract class BaseUiTest {
@@ -25,7 +36,22 @@ public abstract class BaseUiTest {
     public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class, true, false);
 
     protected List<Report> reports = new LinkedList<>();
-    private TestModule testModule = new TestModule();;
+    protected TestModule testModule = new TestModule();
+
+    protected void setTestDB() {
+
+        AppDatabaseFactory dbFactory = Mockito.mock(AppDatabaseFactory.class);
+        //AppDatabase db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), AppDatabase.class).build();
+        when(dbFactory.getDatabase(any(Context.class)))
+                .thenReturn(Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), AppDatabase.class).build());
+        testModule.setAppDatabaseFactory(dbFactory);
+    }
+
+    protected void setTestPrefService() {
+        PreferencesService ps = Mockito.mock(PreferencesService.class);
+        when(ps.isSecureMode(any(Activity.class))).thenReturn(false);
+        testModule.setPreferencesService(ps);
+    }
 
     @Before
     public void setup() throws Exception {
@@ -50,6 +76,12 @@ public abstract class BaseUiTest {
         // TestModule
         testModule.setInitList(reports);
 
+        // AppDatabaseFactory
+        setTestDB();
+
+        // PreferencesService
+        setTestPrefService();
+
         AppComponent component = DaggerAppComponent.builder()
                 .appModule(new AppModule(getApplication()))
                 .serviceModule(testModule)
@@ -59,6 +91,12 @@ public abstract class BaseUiTest {
 
 
         activityRule.launchActivity(new Intent(getApplication().getApplicationContext(), MainActivity.class));
+
+        ReportRepository repo = testModule.provideReportRepository(getApplication(), testModule.provideAppDatabaseFactory());
+        for (Report r: reports) {
+            repo.insert(r);
+        }
+        Thread.sleep(300);
     }
 
     GeolocationApplication getApplication() {
@@ -67,11 +105,11 @@ public abstract class BaseUiTest {
 
     @After
     public void cleanup() {
-        ReportRepository repo = testModule.provideReportRepository(testModule.provideAppDatabase(getApplication()));
+        /*ReportRepository repo = testModule.provideReportRepository(getApplication(), null);
 
         for (Report r: reports) {
             repo.delete(r);
-        }
+        }*/
 
     }
 }

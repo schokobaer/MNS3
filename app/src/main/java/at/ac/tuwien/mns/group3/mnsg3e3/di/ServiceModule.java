@@ -4,10 +4,13 @@ import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.util.Base64;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase;
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabaseFactory;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.GpsLocationService;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.MozillaLocationRestClient;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.NetworkScanService;
+import at.ac.tuwien.mns.group3.mnsg3e3.service.PreferencesService;
+import com.commonsware.cwac.saferoom.SafeHelperFactory;
 import dagger.Module;
 import dagger.Provides;
 
@@ -44,14 +47,19 @@ public class ServiceModule {
 
     @Singleton
     @Provides
-    public ReportRepository provideReportRepository(Application application) {
-        return new ReportRepository(application);
+    public ReportRepository provideReportRepository(Application application, AppDatabaseFactory dbFactory) {
+        return new ReportRepository(application, dbFactory);
     }
 
-    /*
     @Singleton
     @Provides
-    public AppDatabase provideAppDatabase(Application application) {
-        return Room.databaseBuilder(application.getApplicationContext(), AppDatabase.class, "report_database").build();
-    }*/
+    public AppDatabaseFactory provideAppDatabaseFactory() {
+        return new AppDatabaseFactory();
+    }
+
+    @Singleton
+    @Provides
+    public PreferencesService providePreferencesService() {
+        return new PreferencesService();
+    }
 }
