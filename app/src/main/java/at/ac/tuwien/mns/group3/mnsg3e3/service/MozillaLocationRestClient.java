@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MozillaLocationRestClient {
 
-    private String apiKey = "test";
+    private String apiKey;
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
