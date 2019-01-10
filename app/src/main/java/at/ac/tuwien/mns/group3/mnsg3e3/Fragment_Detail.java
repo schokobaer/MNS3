@@ -1,5 +1,7 @@
 package at.ac.tuwien.mns.group3.mnsg3e3;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -8,11 +10,22 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
 import org.w3c.dom.Text;
 
 public class Fragment_Detail extends Fragment {
+
+
+    public static Fragment newInstance(Report report){
+        Fragment fragment = new Fragment_Detail();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("report", report);
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
@@ -22,7 +35,7 @@ public class Fragment_Detail extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle bundle) {
 
-        final Report report = ((ICommunication) getActivity()).selected();
+        final Report report = (Report) getArguments().getSerializable("report");
 
         String date = String.format("%-20s: %s", "Date", report.getDate());
         String gps_cdn = String.format("%-20s: %s", "Coordinates", report.getCdn());
@@ -42,6 +55,18 @@ public class Fragment_Detail extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO implement send
+
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:"));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Report");
+                intent.putExtra(Intent.EXTRA_TEXT, report.toString());
+
+                if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getContext(),"Found no e-mail client.", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
@@ -49,8 +74,8 @@ public class Fragment_Detail extends Fragment {
             @Override
             public void onClick(View v) {
                 //TODO implement delete and returning to activity
-
                 ((ICommunication) getActivity()).delete(report);
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         });
 

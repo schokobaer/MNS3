@@ -37,14 +37,14 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
 
     override fun delete(report: Report?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        reports.remove(report);
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        repo.delete(report)
 
     }
 
     override fun selected(): Report? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        return report;
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return report
     }
 
 
@@ -100,6 +100,8 @@ class MainActivity : AppCompatActivity(), ICommunication {
             this.repo.connectDatabase(null)
         }
 
+
+        updateListView()
 
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
             override fun onChanged(reps: MutableList<Report>?) {
