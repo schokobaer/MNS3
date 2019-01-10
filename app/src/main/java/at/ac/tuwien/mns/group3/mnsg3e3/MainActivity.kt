@@ -94,16 +94,13 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
             alert.setTitle("access encrypted database")
             alert.setMessage("type in the password")
+            alert.setCancelable(false)
 
             val input = EditText(this)
             alert.setView(input)
 
             alert.setPositiveButton("Ok", DialogInterface.OnClickListener { dialogInterface, i ->
                 login(input.text)
-            })
-
-            alert.setNegativeButton("Unknown", DialogInterface.OnClickListener { dialogInterface, i ->
-                //handle case
             })
 
             alert.show()
