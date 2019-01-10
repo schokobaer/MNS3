@@ -11,14 +11,11 @@ import org.junit.Test;
 public class DeleteReportTest extends BaseUiTest {
 
     @Test
-    public void deleteReport() throws InterruptedException {
-        Thread.sleep(3 * 1000);
+    public void deleteReport() {
         RecyclerView rv = activityRule.getActivity().findViewById(R.id.recyclerview);
         Assert.assertEquals(16, rv.getAdapter().getItemCount());
         Espresso.onView(ViewMatchers.withId(R.id.recyclerview)).perform(RecyclerViewActions.actionOnItemAtPosition(1, ViewActions.click()));
-        Thread.sleep(3 * 1000);
         Espresso.onView(ViewMatchers.withId(R.id.delete)).perform(ViewActions.click());
-        Thread.sleep(3 * 1000);
         Assert.assertEquals(15, rv.getAdapter().getItemCount());
     }
 }
