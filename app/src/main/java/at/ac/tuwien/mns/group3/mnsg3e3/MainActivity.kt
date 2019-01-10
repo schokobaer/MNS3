@@ -5,13 +5,13 @@ import android.app.AlertDialog
 import android.arch.lifecycle.Observer
 import android.content.*
 import android.content.pm.PackageManager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.LinearLayoutManager
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityCompat
 import android.text.Editable
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
@@ -291,6 +291,17 @@ class MainActivity : AppCompatActivity(), ICommunication {
             repo?.insert(rep)
             locationServiceInAction = false
 
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            findViewById<FloatingActionButton>(R.id.button1).show()
+            supportFragmentManager.popBackStack()
+
+        } else {
+            Toast.makeText(this, "Closing the app.", Toast.LENGTH_LONG).show()
+            finish()
         }
     }
 
