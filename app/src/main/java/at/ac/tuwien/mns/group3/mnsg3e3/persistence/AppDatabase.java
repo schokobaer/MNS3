@@ -13,7 +13,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase INSTANCE;
 
-    public static AppDatabase getDatabase(final Context context, SafeHelperFactory factory) {
+    /*public static AppDatabase getDatabase(final Context context, SafeHelperFactory factory) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
@@ -32,5 +32,5 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public static void refreshInstance() {
         INSTANCE = null;
-    }
+    }*/
 }

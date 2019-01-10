@@ -7,6 +7,7 @@ import at.ac.tuwien.mns.group3.mnsg3e3.model.Report;
 import com.commonsware.cwac.saferoom.SQLCipherUtils;
 import com.commonsware.cwac.saferoom.SafeHelperFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
@@ -16,12 +17,23 @@ public class ReportRepository {
     private ReportDao mReportDao;
     private LiveData<List<Report>> mAllReports;
 
-    public ReportRepository(Application application) {
+    private AppDatabaseFactory dbFactory;
+
+    public ReportRepository(Application application, AppDatabaseFactory dbFactory) {
         this.application = application;
+        this.dbFactory = dbFactory;
     }
 
     public void connectDatabase(SafeHelperFactory factory) {
-        AppDatabase db = AppDatabase.getDatabase(application, factory);
+        //AppDatabase db = AppDatabase.getDatabase(application, factory);
+        AppDatabase db = dbFactory.getDatabase(application, factory);
+        mReportDao = db.reportDao();
+        mAllReports = mReportDao.getAll();
+    }
+
+    public void connectDatabase() {
+        //AppDatabase db = AppDatabase.getDatabase(application, factory);
+        AppDatabase db = dbFactory.getDatabase(application);
         mReportDao = db.reportDao();
         mAllReports = mReportDao.getAll();
     }

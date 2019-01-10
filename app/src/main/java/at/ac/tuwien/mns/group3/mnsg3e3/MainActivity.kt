@@ -19,6 +19,7 @@ import at.ac.tuwien.mns.group3.mnsg3e3.interfaces.ICommunication
 import at.ac.tuwien.mns.group3.mnsg3e3.model.LocationReport
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Report
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase
+import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabaseFactory
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository
 import at.ac.tuwien.mns.group3.mnsg3e3.service.LocationReportIntentService
 import at.ac.tuwien.mns.group3.mnsg3e3.service.PreferencesService
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
     private var report:Report? = null;
     @Inject lateinit var repo:ReportRepository
     @Inject lateinit var prefService:PreferencesService
+    @Inject lateinit var dbFactory: AppDatabaseFactory
     private var locationServiceInAction = false
     private var secureModeOn:Boolean = false
 
@@ -104,7 +106,7 @@ class MainActivity : AppCompatActivity(), ICommunication {
             btn_sec.isEnabled = false
             btn_sec.hide()
         } else {
-            this.repo.connectDatabase(null)
+            this.repo.connectDatabase()
         }
 
 
@@ -248,12 +250,12 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
     private fun switchMode(inputEditable: Editable) {
 
-        val db = AppDatabase.getDatabase(this, null)
+        val db = dbFactory.getDatabase(this)
         db.close()
         SQLCipherUtils.encrypt(applicationContext,"report_database",inputEditable)
 
         val factory = SafeHelperFactory.fromUser(inputEditable)
-        AppDatabase.refreshInstance()
+        dbFactory.refreshInstance()
         this.repo.connectDatabase(factory)
         repo?.allReports?.observe(this, object: Observer<MutableList<Report>> {
             override fun onChanged(reps: MutableList<Report>?) {
