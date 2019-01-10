@@ -37,13 +37,14 @@ public class ServiceModule {
 
     @Singleton
     @Provides
-    public ReportRepository provideReportRepository(AppDatabase db) {
-        return new ReportRepository(db);
+    public ReportRepository provideReportRepository(Application application) {
+        return new ReportRepository(application);
     }
 
+    /*
     @Singleton
     @Provides
     public AppDatabase provideAppDatabase(Application application) {
         return Room.databaseBuilder(application.getApplicationContext(), AppDatabase.class, "report_database").build();
-    }
+    }*/
 }
