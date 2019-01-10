@@ -2,6 +2,7 @@ package at.ac.tuwien.mns.group3.mnsg3e3.di;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.util.Base64;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.AppDatabase;
 import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.GpsLocationService;
@@ -15,6 +16,12 @@ import javax.inject.Singleton;
 @Module
 public class ServiceModule {
 
+    static {
+        System.loadLibrary("keys");
+    }
+
+    public native String getMlsApiKey();
+
     @Singleton
     @Provides
     public GpsLocationService provideGpsLocationService() {
@@ -25,7 +32,7 @@ public class ServiceModule {
     @Provides
     public MozillaLocationRestClient provideMozillaLocationRestClient() {
         MozillaLocationRestClient s = new MozillaLocationRestClient();
-        s.setApiKey("test");
+        s.setApiKey(new String(Base64.decode(getMlsApiKey(), Base64.DEFAULT)));
         return s;
     }
 

@@ -11,6 +11,7 @@ import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
+import at.ac.tuwien.mns.group3.mnsg3e3.util.DebugInfo;
 import at.ac.tuwien.mns.group3.mnsg3e3.util.SimpleFuture;
 
 import java.util.LinkedList;
@@ -23,7 +24,11 @@ public class NetworkScanService {
 
 
     @SuppressLint("MissingPermission")
-    private List<CellTower> getCellTowers(Context ctx) {
+    public List<CellTower> getCellTowers(Context ctx) {
+        if (DebugInfo.TEST_CELL_TOWERS) {
+            return getDebugCellTowers();
+        }
+
         TelephonyManager tel_manager = ((TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE));
         List<CellInfo> foundCellInfos = tel_manager.getAllCellInfo();
         List<CellTower> cellTowers = new LinkedList<>();
@@ -37,7 +42,7 @@ public class NetworkScanService {
         return cellTowers;
     }
 
-    public List<CellTower> getDebugCellTowers() {
+    private List<CellTower> getDebugCellTowers() {
         List<CellTower> towers = new LinkedList<>();
         towers.add(new CellTower(9983701, 232, 10, 2520, -60, CellTower.SignalType.WCDMA, true));
         towers.add(new CellTower(2345715, 232, 3, 13000, -90, CellTower.SignalType.WCDMA, true));
@@ -46,6 +51,10 @@ public class NetworkScanService {
     }
 
     public List<ScanResult> getWifiNetworksSync(Context ctx) {
+        if (DebugInfo.TEST_WIFI_NETWORKS) {
+            return new LinkedList<>();
+        }
+
         SimpleFuture<List<ScanResult>> future = new SimpleFuture<>();
         WifiManager wifiManager = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
         WifiNetworkBroadcastReceiver wifiScanReceiver = new WifiNetworkBroadcastReceiver(future, wifiManager);

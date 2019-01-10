@@ -2,14 +2,12 @@ package at.ac.tuwien.mns.group3.mnsg3e3.service;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
-import android.support.v4.util.Consumer;
 import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.CellTower;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
+import at.ac.tuwien.mns.group3.mnsg3e3.util.DebugInfo;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.Volley;
@@ -25,9 +23,16 @@ public class MozillaLocationRestClient {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+        //Log.i(getClass().getName(), "Set apiKey: " + apiKey);
     }
 
     public Location getLocation(Context ctx, List<CellTower> cellTowers, List<ScanResult> wifiNetworks) {
+
+        if (DebugInfo.TEST_MLS_LOCATION) {
+            Location l = new Location(48.19,16.33, 0.1d);
+            Log.i(getClass().getName(), "Using Test MLS Location: " + l.toString());
+            return l;
+        }
 
         RequestQueue queue = Volley.newRequestQueue(ctx);
         String url = "https://location.services.mozilla.com/v1/geolocate?key=" + this.apiKey;

@@ -55,7 +55,7 @@ public class LocationReportIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         // Sync
-        List<CellTower> cellTowers = networkScanService.getDebugCellTowers();
+        List<CellTower> cellTowers = networkScanService.getCellTowers(this);
         List<ScanResult> wifiNetworks = networkScanService.getWifiNetworksSync(this);
         Location gpsLocation = gpsLocationService.getGpsLocationSync(this);
         Location mozillaLocation = mozillaLocationRestClient.getLocation(this, cellTowers, wifiNetworks);

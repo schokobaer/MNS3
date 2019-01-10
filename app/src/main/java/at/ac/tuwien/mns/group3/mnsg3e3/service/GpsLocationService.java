@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import at.ac.tuwien.mns.group3.mnsg3e3.model.Location;
+import at.ac.tuwien.mns.group3.mnsg3e3.util.DebugInfo;
 import at.ac.tuwien.mns.group3.mnsg3e3.util.SimpleFuture;
 
 import javax.inject.Inject;
@@ -24,21 +25,25 @@ public class GpsLocationService {
     @SuppressLint("MissingPermission")
     public Location getGpsLocationSync(Context ctx) {
 
+        if (DebugInfo.TEST_GPS_LOCATION) {
+            Location l = new Location(48.1905858,16.3320705, 0.1d);
+            Log.i(getClass().getName(), "Using Test GPS Location: " + l.toString());
+            return l;
+        }
+
         SimpleFuture<Location> future = new SimpleFuture<>();
         LocationManager locationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
         SimpleLocationListener listener = new SimpleLocationListener(future);
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, listener, ctx.getMainLooper());
 
         try {
-            Location l = future.get(5, TimeUnit.SECONDS); // TODO: Change to 60
+            Location l = future.get(60, TimeUnit.SECONDS); // TODO: Change to 60
             //Location l = future.get();
             Log.i(getClass().getName(), "Received a GPS Location: " + l.toString());
             return l;
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             Log.w(getClass().getName(), "Timeout in getGpsLocation");
-            Location l = new Location(48.1905858,16.3320705, 0.1d);
-            Log.i(getClass().getName(), "Using Test GPS Location: " + l.toString());
-            return l;
+            return null;
         }
     }
 
