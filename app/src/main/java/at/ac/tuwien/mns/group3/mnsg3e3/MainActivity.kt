@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity(), ICommunication {
         setContentView(R.layout.activity_main)
 
         this.permissions = askPermissions()
-        this.registerLocationReceiver()
 
         val button = findViewById<FloatingActionButton>(R.id.button1)
         button.setOnClickListener { test() }
@@ -79,12 +78,19 @@ class MainActivity : AppCompatActivity(), ICommunication {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        this.registerLocationReceiver()
+        Log.i("MainActivity", "Registered LocationReceiver")
+    }
+
     /**
      * Unregisteres the locationReportReceiver
      */
     override fun onStop() {
         super.onStop()
         unregisterReceiver(locationReportReceiver)
+        Log.i("MainActivity", "Unregistered LocationReceiver")
     }
 
     /**
