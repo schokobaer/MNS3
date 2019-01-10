@@ -8,6 +8,7 @@ import at.ac.tuwien.mns.group3.mnsg3e3.persistence.ReportRepository;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.GpsLocationService;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.MozillaLocationRestClient;
 import at.ac.tuwien.mns.group3.mnsg3e3.service.NetworkScanService;
+import at.ac.tuwien.mns.group3.mnsg3e3.service.PreferencesService;
 import dagger.Module;
 import dagger.Provides;
 
@@ -48,10 +49,9 @@ public class ServiceModule {
         return new ReportRepository(application);
     }
 
-    /*
     @Singleton
     @Provides
-    public AppDatabase provideAppDatabase(Application application) {
-        return Room.databaseBuilder(application.getApplicationContext(), AppDatabase.class, "report_database").build();
-    }*/
+    public PreferencesService providePreferencesService() {
+        return new PreferencesService();
+    }
 }
