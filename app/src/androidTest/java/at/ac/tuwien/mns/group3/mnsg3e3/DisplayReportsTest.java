@@ -11,12 +11,10 @@ import static com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.
 public class DisplayReportsTest extends BaseUiTest {
 
     @Test
-    public void displayAndScrollOnReportList() throws InterruptedException {
+    public void displayAndScrollOnReportList() {
         String assertionString = "Location: ooo";
-        Thread.sleep(3 * 1000);
         assertNotExist(assertionString);
         Espresso.onView(ViewMatchers.withId(R.id.recyclerview)).perform(RecyclerViewActions.scrollToPosition(12));
-        Thread.sleep(5 * 1000);
         assertDisplayed(assertionString);
     }
 }
